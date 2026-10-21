@@ -6,6 +6,7 @@ import { getCollection, render } from "astro:content";
 const items = (await getCollection("work")).sort((a, b) => +b.data.date - +a.data.date);
 const groups = [
 	{ heading: "Internships", items: items.filter((i) => i.data.kind === "internship") },
+	{ heading: "Leadership & roles", items: items.filter((i) => i.data.kind === "leadership") },
 	{ heading: "Projects", items: items.filter((i) => i.data.kind === "project") },
 ].filter((g) => g.items.length);
 ---
@@ -21,7 +22,7 @@ const groups = [
 						<Entry
 							title={item.data.title}
 							href={item.data.link}
-							meta={[item.data.role, item.data.org, item.data.period]}
+							meta={[item.data.role, item.data.org, item.data.location, item.data.period]}
 						>
 							<Content />
 						</Entry>

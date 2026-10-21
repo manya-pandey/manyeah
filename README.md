@@ -80,5 +80,5 @@ Set the real domain in `astro.config.mjs` (`site`).
 
 - **Statue credit**: the footer says "statue: Augustus". Add the scan's source to `STATUE.CREDIT` / `STATUE.CREDIT_URL` if it needs attribution.
 - **Tagline**: none yet. Set `SITE.TAGLINE` to show one under the intro.
-- **About**: the text, photos, email and social links in `ABOUT` are placeholders.
+- **About**: the photos in `public/about/` are placeholders rendered from the statue.
 - **Overall design**: the layout follows the paper sketch (`design/sketch.webp`).

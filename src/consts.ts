@@ -1,7 +1,6 @@
 // Everything a non-developer is likely to want to change lives in this file.
 
 export const SITE = {
-	// TODO: confirm name + intro.
 	NAME: "Manya",
 	INTRO: "Builds things, reads papers, and keeps a small city of bricks.",
 	DESCRIPTION: "Work, research, people, blogs and snippets.",
@@ -11,24 +10,23 @@ export const SITE = {
 };
 
 // The About section under the landing page. Layout copied from LHRUN/one-space
-// (MIT). Everything here is placeholder until Manya fills it in.
+// (MIT). The photos are still placeholders rendered from the statue.
 export const ABOUT = {
 	// Front of the flip card (pixel art) and the back (shown on hover).
 	PHOTO_PIXEL: "/about/avatar-pixel.png",
 	PHOTO: "/about/avatar.jpg",
 	PARAGRAPHS: [
-		"Hello, I'm Manya, a student who builds things and reads too many papers. Welcome to my personal space!",
-		"I work across internships, research and events, from running the Adobe event to speaking at the Google symposium. I care about doing things properly and making them a little delightful, and I'm always up for a project that teaches me something new.",
+		"Hello, I'm Manya, a computer science student at KIIT in Bhubaneswar who builds things and reads too many papers. Welcome to my personal space!",
+		"I work on AI research and engineering: making time series foundation models sturdier at inference time at Birla AI Labs, building retrieval and LLM systems at BNY, and studying how a language model's confidence relates to its reasoning. I also lead AI/ML at Google Developer Group Bhubaneswar.",
 		"If you'd like to get to know me better, the sections up top are a good place to start.",
 	],
-	EMAIL: "hello@example.com",
-	// Shown as the icon row, in this order. Remove any you don't use.
+	EMAIL: "manyapandey7842@gmail.com",
+	// Shown as the icon row, in this order. The icon set also has
+	// "twitter" and "telegram" if those are ever wanted.
 	SOCIALS: [
-		{ NAME: "github", HREF: "https://github.com/" },
-		{ NAME: "twitter", HREF: "https://x.com/" },
-		{ NAME: "gmail", HREF: "mailto:hello@example.com" },
-		{ NAME: "telegram", HREF: "https://t.me/" },
-		{ NAME: "linkedin", HREF: "https://www.linkedin.com/" },
+		{ NAME: "github", HREF: "https://github.com/manya-pandey" },
+		{ NAME: "linkedin", HREF: "https://www.linkedin.com/in/manya-pandey" },
+		{ NAME: "gmail", HREF: "mailto:manyapandey7842@gmail.com" },
 	] as { NAME: "github" | "twitter" | "gmail" | "telegram" | "linkedin"; HREF: string }[],
 };
 

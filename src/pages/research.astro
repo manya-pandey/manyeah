@@ -1,5 +1,6 @@
 ---
 import Entry from "@/components/Entry.astro";
+import { monthYear } from "@/lib/format";
 import Section from "@/layouts/Section.astro";
 import { getCollection, render } from "astro:content";
 
@@ -15,7 +16,7 @@ const items = (await getCollection("research")).sort((a, b) => +b.data.date - +a
 					title={item.data.title}
 					href={item.data.link}
 					tag={item.data.status}
-					meta={[item.data.authors, item.data.venue]}
+					meta={[item.data.authors, item.data.venue, monthYear(item.data.date)]}
 				>
 					<Content />
 				</Entry>

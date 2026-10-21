@@ -8,9 +8,10 @@ const work = defineCollection({
 	loader: glob({ base: "./src/content/work", pattern: "**/*.md" }),
 	schema: z.object({
 		title: z.string(),
-		kind: z.enum(["internship", "project"]),
+		kind: z.enum(["internship", "leadership", "project"]),
 		org: z.string().optional(),
 		role: z.string().optional(),
+		location: z.string().optional(),
 		period: z.coerce.string(),
 		// Used for ordering; newest first.
 		date: z.coerce.date(),
@@ -23,7 +24,7 @@ const research = defineCollection({
 	loader: glob({ base: "./src/content/research", pattern: "**/*.md" }),
 	schema: z.object({
 		title: z.string(),
-		status: z.enum(["published", "under review", "in progress"]),
+		status: z.enum(["published", "accepted", "preprint", "under review", "in progress"]),
 		venue: z.string().optional(),
 		authors: z.string().optional(),
 		date: z.coerce.date(),

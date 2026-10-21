@@ -1,8 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-  <rect width="16" height="16" rx="3" fill="#f2eadb"/>
-  <g fill="#2a211b" font-family="Bree Serif" font-size="7.6" text-anchor="middle">
-    <text x="8" y="7.3">SP</text>
-    <text x="8" y="14.6">QR</text>
-  </g>
-  <path d="M2.4 1.8C1 4 1 12 2.4 14.2M13.6 1.8C15 4 15 12 13.6 14.2" fill="none" stroke="#b4532a" stroke-width="1.1" stroke-linecap="round"/>
+  <style>
+    .leaf { fill: #0b7a4b } .stem { stroke: #0b7a4b } .trace { stroke: #1f4fbf } .node { fill: #1f4fbf }
+    @media (prefers-color-scheme: dark) {
+      .leaf { fill: #3cf2a0 } .stem { stroke: #3cf2a0 } .trace { stroke: #3a8dff } .node { fill: #3a8dff }
+    }
+  </style>
+  <path class="stem" d="M6 1.5C4 1.6 4.3 6.6 2.6 8 4.3 9.4 4 14.4 6 14.5M10 1.5C12 1.6 11.7 6.6 13.4 8 11.7 9.4 12 14.4 10 14.5" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle class="node" cx="1.3" cy="8" r="1.1"/><circle class="node" cx="14.7" cy="8" r="1.1"/>
 </svg>

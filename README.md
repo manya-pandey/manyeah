@@ -56,7 +56,7 @@ The whole site, the SPQR mark included, is set in Bree Serif (`--font-main` in `
 
 ## SPQR
 
-On this site SPQR stands for *Scientia Per Quaestionem Reperitur*, "knowledge is found through questioning" (`MOTTO` in `src/consts.ts`). The mark is { SPQR } with the curly braces drawn as laurel sprigs, with circuit traces and node dots branching off among the leaves (geometry in `src/lib/spqr.ts`). The loading screen, in the current theme, grows the laurels, lights the circuit, glitches the letters on, types the Latin motto, then brings in the English translation, which holds for a couple of seconds while the Latin dims. The tab icon uses the same laurels: `npm run favicon` writes `design/favicon*.svg`, which are rendered to the PNGs in `public/`.
+On this site SPQR stands for *Scientia Per Quaestionem Reperitur*, "knowledge is found through questioning" (`MOTTO` in `src/consts.ts`). The mark is { SPQR } with the curly braces drawn as laurel sprigs, with circuit traces and node dots branching off among the leaves (geometry in `src/lib/spqr.ts`). The loading screen, in the current theme, grows the laurels, lights the circuit, glitches the letters on, types the Latin motto, then brings in the English translation, which holds for a couple of seconds while the Latin dims. The tab icon is the laurel braces alone, no letters or background: deep techno green and blue when the browser is in light mode, neon when it's dark. `npm run favicon` writes `design/favicon*.svg`; `public/favicon.svg` is a copy of `design/favicon.svg`, and the PNG fallbacks (`favicon-16/32/64[-dark].png`) are renders of the two SVGs in each colour scheme.
 
 ## The landing page
 

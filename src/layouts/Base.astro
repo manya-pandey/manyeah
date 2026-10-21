@@ -27,10 +27,16 @@ const presetIds = Object.values(THEMES).map((t) => t.ID);
 		<meta property="og:description" content={description} />
 		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
 
-		<!-- The SPQR mark: brackets and letters at 64 and 32px, simpler at 16px. -->
-		<link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png" />
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+		<!--
+			Tab icon: the SPQR laurels alone, deep green and blue on light browser
+			tabs, neon on dark ones. Browsers that read SVG icons switch by
+			themselves; the rest pick the matching PNG.
+		-->
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" media="(prefers-color-scheme: light)" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32-dark.png" media="(prefers-color-scheme: dark)" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" media="(prefers-color-scheme: light)" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16-dark.png" media="(prefers-color-scheme: dark)" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
 		<!--

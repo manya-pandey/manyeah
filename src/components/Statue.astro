@@ -3,7 +3,7 @@ import { STATUE } from "@/consts";
 ---
 
 <!-- The floating statue behind the landing page. Rendering approach adapted from LHRUN/one-space (MIT). -->
-<div id="statue" class="statue" data-src={STATUE.SRC} aria-hidden="true"></div>
+<div id="statue" class="statue" data-src={STATUE.SRC} data-draco="/draco/" aria-hidden="true"></div>
 
 <script>
 	import * as THREE from "three";
@@ -58,7 +58,7 @@ import { STATUE } from "@/consts";
 		const pivot = new THREE.Group();
 		scene.add(pivot);
 
-		const draco = new DRACOLoader().setDecoderPath("/draco/");
+		const draco = new DRACOLoader().setDecoderPath(container.dataset.draco!);
 		const loader = new GLTFLoader().setDRACOLoader(draco);
 		loader.load(
 			container.dataset.src!,

@@ -31,10 +31,12 @@ const paletteIds = PALETTES.map((p) => p.ID);
 
 		<!-- Apply the saved palette before first paint. -->
 		<script is:inline define:vars={{ paletteIds }}>
+			let palette = paletteIds[0];
 			try {
 				const saved = localStorage.getItem("palette");
-				if (saved && paletteIds.includes(saved)) document.documentElement.dataset.palette = saved;
+				if (saved && paletteIds.includes(saved)) palette = saved;
 			} catch {}
+			document.documentElement.dataset.palette = palette;
 		</script>
 		<slot name="head" />
 	</head>

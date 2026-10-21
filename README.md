@@ -1,28 +1,27 @@
 # manyeah
 
-Personal site: a floating statue, five doodled sections, a theme menu (cream, midnight, or your own colours), a techno SPQR loading screen, and a wall of bricks every visitor helps build.
+Personal site: a techno SPQR loading screen, a floating statue that rolls as you scroll, five doodled sections, an About section, and a menu with a theme picker (cream, midnight, or your own colours).
 
-Built with [Astro](https://astro.build), Tailwind and three.js, deployed on Cloudflare Workers. Inspired by [abhi.now](https://abhi.now) (doodled section links) and [one-space](https://github.com/LHRUN/one-space) (the floating statue, MIT).
+Built with [Astro](https://astro.build), Tailwind and three.js, deployed on Cloudflare Workers. Inspired by [abhi.now](https://abhi.now) (doodled section links) and [one-space](https://github.com/LHRUN/one-space) (MIT): the floating, scroll-rolling statue, the background texture (`public/background.png`), the About section layout and its github / twitter / gmail / telegram icons come from one-space.
 
 ## Run it
 
 ```sh
 npm install
 npm run dev        # http://localhost:4321
-npm run build      # static pages + the /api/bricks worker into dist/
+npm run build      # static site into dist/
 npm run check      # type-check
 ```
-
-The dev server runs the brick API against a local KV store, so bricks work offline.
 
 ## Where things live
 
 | Want to change…                         | Edit                                     |
 | --------------------------------------- | ---------------------------------------- |
 | Name, intro, résumé link, tagline       | `src/consts.ts` → `SITE`                 |
+| About text, photos, email, social links | `src/consts.ts` → `ABOUT`, `public/about/` |
 | The statue                              | `npm run statue` (below), set `STATUE`   |
 | Built-in themes (cream / midnight)      | `src/consts.ts` → `THEMES`, `global.css` |
-| Theme menu (presets, colour bars)       | `src/components/ThemePanel.astro`        |
+| Menu (links, theme presets, colour bars)| `src/components/SiteMenu.astro`          |
 | Custom-theme rules (text colour, etc.)  | theme engine in `src/layouts/Base.astro` |
 | Work / research / people / snippets     | add a `.md` file in `src/content/<name>/`|
 | Blog posts                              | `src/content/blogs/*.md`                 |
@@ -45,9 +44,17 @@ npm run statue -- path/to/scan.stl public/statue.glb 120000 -90 0 0
 
 The last three numbers rotate the scan (degrees about X, Y and Z) so it ends up upright and facing the viewer; `-90 0 0` fixes the usual Z-up STL. Lower the triangle count for a smaller file. Then point `STATUE.SRC` in `src/consts.ts` at the new file. `STATUE.TURN` sets how far he looks to the side. Augustus has a flat back, so keep that small.
 
+## The landing page
+
+- The nav stays pinned to the top as you scroll. The **about** button scrolls to the About section; the three-bar button at the end opens the menu.
+- **scroll** and **contact** boxes sit at the bottom of the first screen. Contact opens an email to `ABOUT.EMAIL`.
+- Below the first screen is the About section: a flip-card photo (pixel art on the front, the photo on hover) whose corners round off as it scrolls in, a row of contact icons, and a few paragraphs. The photos in `public/about/` are placeholders rendered from the statue.
+- At the very bottom a note points back up at the nav.
+- The statue turns a full roll as the page scrolls.
+
 ## The theme menu
 
-The **theme** doodle after *snippets* opens a menu:
+The three-bar menu holds quick links (about, résumé, contact) and the theme picker:
 
 - **Auto** (the default) shows Cream in light mode and Midnight in dark mode, following the visitor's system.
 - **Cream** and **Midnight** pin one of them.
@@ -55,15 +62,10 @@ The **theme** doodle after *snippets* opens a menu:
 
 For a custom theme the text colour is worked out from the background (dark text on light backgrounds, light text on dark ones). The choice is saved in that visitor's browser only.
 
-## The bricks
-
-Each click on **Click to add a brick** calls `POST /api/bricks`, which adds one to a counter in Cloudflare KV (max 12 per visitor per minute). Every 5 bricks stacked become one marble block; the rest stay brick. If the API can't be reached (for example in a static preview), the wall falls back to the visitor's own browser and says so in the `?` popup.
-
 ## Deploy (Cloudflare)
 
 ```sh
-npx wrangler kv namespace create BRICKS   # once; paste the id into wrangler.jsonc
-npx wrangler types                        # after any wrangler.jsonc change
+npx wrangler types   # after any wrangler.jsonc change
 npm run deploy
 ```
 
@@ -72,5 +74,6 @@ Set the real domain in `astro.config.mjs` (`site`).
 ## Open items (from the design doc)
 
 - **Statue credit**: the footer says "statue: Augustus". Add the scan's source to `STATUE.CREDIT` / `STATUE.CREDIT_URL` if it needs attribution.
-- **Tagline**: "a city of bricks, left in marble" isn't approved yet. Set `SITE.TAGLINE` to show one.
+- **Tagline**: none yet. Set `SITE.TAGLINE` to show one under the intro.
+- **About**: the text, photos, email and social links in `ABOUT` are placeholders.
 - **Overall design**: the layout follows the paper sketch (`design/sketch.webp`).

@@ -79,8 +79,10 @@ import { STATUE } from "@/consts";
 		camera.position.set(0, 0, 6);
 
 		const ambient = new THREE.AmbientLight(0xffffff, cssNumber("--statue-ambient", 0.25));
-		const key = new THREE.PointLight(cssColor("--statue-light"), 42, 0, 1.6);
-		key.position.set(2, 1.5, 3);
+		// A soft key light off to one side. It follows the pointer slowly and
+		// within a small range, so it grazes the bust instead of flooding it.
+		const key = new THREE.PointLight(cssColor("--statue-light"), 20, 0, 1.6);
+		key.position.set(2, 1.5, 2.4);
 		const rim = new THREE.DirectionalLight(cssColor("--accent"), 1.4);
 		rim.position.set(-3, 2, -2);
 		scene.add(ambient, key, rim);
@@ -151,19 +153,27 @@ import { STATUE } from "@/consts";
 			if (visible) requestAnimationFrame(tick);
 		});
 
+		// Scrolling rolls the bust a full turn on two axes, as on LHRUN/one-space.
+		let roll = 0;
+		const scrollFraction = () => {
+			const max = document.documentElement.scrollHeight - window.innerHeight;
+			return max > 0 ? window.scrollY / max : 0;
+		};
+
 		const startedAt = performance.now();
 		function tick() {
 			if (!visible) return;
 			const t = (performance.now() - startedAt) / 1000;
-			key.position.x += (target.x * 4 - key.position.x) * 0.06;
+			key.position.x += (1.2 + target.x * 1.6 - key.position.x) * 0.03;
 			// Keep the light at or above eye level; lit from below, the bust turns ghoulish.
-			key.position.y += (Math.max(target.y * 2.5, -0.2) + 1 - key.position.y) * 0.06;
+			key.position.y += (Math.max(target.y * 1.5, -0.2) + 1 - key.position.y) * 0.03;
 			if (reduceMotion) {
 				pivot.position.y = anchor.y;
 			} else {
+				roll += (scrollFraction() * Math.PI * 2 - roll) * 0.08;
 				pivot.position.y = anchor.y + Math.sin(t * 0.6) * 0.12;
-				pivot.rotation.y = baseY + Math.sin(t * 0.25) * 0.12 + target.x * 0.12;
-				pivot.rotation.x = Math.sin(t * 0.4) * 0.03 - target.y * 0.05;
+				pivot.rotation.y = baseY + roll + Math.sin(t * 0.25) * 0.12 + target.x * 0.12;
+				pivot.rotation.x = roll + Math.sin(t * 0.4) * 0.03 - target.y * 0.05;
 			}
 			renderer.render(scene, camera);
 			requestAnimationFrame(tick);

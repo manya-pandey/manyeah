@@ -1,20 +1,47 @@
 ---
-import { THEMES } from "@/consts";
+import { ABOUT, SITE, THEMES } from "@/consts";
 
-// The theme menu that opens from the nav. Visitors pick cream or midnight
-// (or let their system decide), or drag the bars / type hex codes to make
-// their own primary (background) and secondary (accent) colours, live.
+// The three-bar menu at the end of the header: a few quick links, then the
+// theme controls. Visitors pick cream or midnight (or let their system
+// decide), or drag the bars / type hex codes to make their own primary
+// (background) and secondary (accent) colours, live.
 const colours = [
 	{ key: "a", name: "Primary", role: "background" },
 	{ key: "b", name: "Secondary", role: "accent" },
 ] as const;
 ---
 
-<div id="theme-panel" class="panel" role="dialog" aria-labelledby="theme-panel-title" hidden>
+<div class="site-menu">
+<button
+	type="button"
+	class="burger"
+	data-menu-toggle
+	aria-expanded="false"
+	aria-controls="site-menu-panel"
+	aria-label="Menu"
+>
+	<svg viewBox="0 0 32 32" aria-hidden="true">
+		<path class="bar-1" d="M6 9.6c6.6-.6 13.4-.7 20.2-.2" />
+		<path class="bar-2" d="M5.8 16.2c6.8-.4 13.6-.3 20.4.1" />
+		<path class="bar-3" d="M6.2 22.6c6.4-.5 13-.5 19.6 0" />
+	</svg>
+</button>
+
+<div id="site-menu-panel" class="panel" role="dialog" aria-labelledby="site-menu-title" hidden>
 	<div class="head">
-		<h2 id="theme-panel-title">theme</h2>
+		<h2 id="site-menu-title">menu</h2>
+		<button type="button" class="close" data-menu-close aria-label="Close menu">×</button>
+	</div>
+
+	<nav class="links" aria-label="Quick links">
+		<a href="/#about" data-menu-link>about</a>
+		<a href={SITE.RESUME}>résumé</a>
+		<a href={`mailto:${ABOUT.EMAIL}`}>contact</a>
+	</nav>
+
+	<div class="theme-head">
+		<h3>theme</h3>
 		<span class="custom-chip" data-custom-chip hidden>your own</span>
-		<button type="button" class="close" data-theme-close aria-label="Close theme menu">×</button>
 	</div>
 
 	<div class="presets" role="radiogroup" aria-label="Preset themes">
@@ -90,14 +117,15 @@ const colours = [
 		<button type="button" class="reset" data-theme-reset>reset</button>
 	</div>
 </div>
+</div>
 
 <script>
 	type Key = "a" | "b";
 	type Hsl = [number, number, number];
 
 	const theme = window.siteTheme;
-	const panel = document.getElementById("theme-panel")!;
-	const toggle = document.querySelector<HTMLButtonElement>("[data-theme-toggle]")!;
+	const panel = document.getElementById("site-menu-panel")!;
+	const toggle = document.querySelector<HTMLButtonElement>("[data-menu-toggle]")!;
 	const presets = [...panel.querySelectorAll<HTMLButtonElement>("[data-preset]")];
 	const chip = panel.querySelector<HTMLElement>("[data-custom-chip]")!;
 	const picks = Object.fromEntries(
@@ -204,10 +232,11 @@ const colours = [
 		}
 	}
 	toggle.addEventListener("click", () => open(toggle.getAttribute("aria-expanded") !== "true"));
-	panel.querySelector("[data-theme-close]")!.addEventListener("click", () => {
+	panel.querySelector("[data-menu-close]")!.addEventListener("click", () => {
 		open(false);
 		toggle.focus();
 	});
+	panel.querySelector("[data-menu-link]")!.addEventListener("click", () => open(false));
 	document.addEventListener("pointerdown", (e) => {
 		const target = e.target as Node;
 		if (!panel.hidden && !panel.contains(target) && !toggle.contains(target)) open(false);
@@ -225,10 +254,62 @@ const colours = [
 </script>
 
 <style>
+	.site-menu {
+		position: relative;
+		z-index: 50;
+	}
+	.burger {
+		display: grid;
+		place-items: center;
+		width: 2.9rem;
+		height: 2.9rem;
+		padding: 0;
+		border: 1.5px solid var(--ink);
+		border-radius: 6px 9px 7px 10px / 9px 6px 10px 7px;
+		background: color-mix(in oklab, var(--bg) 85%, transparent);
+		color: var(--ink);
+		cursor: pointer;
+		box-shadow: 2px 2px 0 var(--line);
+		transition:
+			color 0.2s,
+			transform 0.15s;
+	}
+	.burger:hover,
+	.burger[aria-expanded="true"] {
+		color: var(--accent);
+		border-color: var(--accent);
+	}
+	.burger:hover {
+		transform: rotate(-4deg);
+	}
+	.burger svg {
+		width: 1.8rem;
+		height: 1.8rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 2.2;
+		stroke-linecap: round;
+	}
+	.burger path {
+		transform-origin: 16px 16px;
+		transition:
+			transform 0.25s ease,
+			opacity 0.2s;
+	}
+	.burger[aria-expanded="true"] .bar-1 {
+		transform: translateY(6.5px) rotate(45deg);
+	}
+	.burger[aria-expanded="true"] .bar-2 {
+		opacity: 0;
+	}
+	.burger[aria-expanded="true"] .bar-3 {
+		transform: translateY(-6.5px) rotate(-45deg);
+	}
+
 	.panel {
 		position: absolute;
 		top: calc(100% + 0.7rem);
-		right: -0.5rem;
+		right: 0;
 		z-index: 40;
 		display: flex;
 		flex-direction: column;
@@ -240,8 +321,6 @@ const colours = [
 		background: var(--bg);
 		color: var(--ink);
 		box-shadow: 5px 5px 0 var(--line);
-		/* undo the nav item's tilt */
-		transform: rotate(calc(-1 * var(--tilt, 0deg)));
 		font-family: var(--font-serif);
 		font-size: 1rem;
 		text-align: left;
@@ -253,13 +332,12 @@ const colours = [
 	@media (max-width: 640px) {
 		.panel {
 			position: fixed;
-			top: 5.2rem;
+			top: 4.4rem;
 			left: max(16px, env(safe-area-inset-left, 0px));
 			right: max(16px, env(safe-area-inset-right, 0px));
 			width: auto;
 			max-height: calc(100dvh - 6.2rem);
 			overflow-y: auto;
-			transform: none;
 		}
 	}
 	@keyframes drop-in {
@@ -279,6 +357,36 @@ const colours = [
 		font-size: 1.7rem;
 		font-weight: 700;
 		line-height: 1;
+	}
+	.links {
+		display: flex;
+		gap: 1.1rem;
+		font-family: var(--font-hand);
+		font-size: 1.35rem;
+	}
+	.links a {
+		color: var(--ink);
+		text-decoration: underline;
+		text-decoration-color: var(--line);
+		text-underline-offset: 4px;
+	}
+	.links a:hover {
+		color: var(--accent);
+		text-decoration-color: var(--accent);
+	}
+	.theme-head {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding-top: 0.7rem;
+		border-top: 1.5px dashed var(--line);
+	}
+	h3 {
+		font-family: var(--font-display);
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
 	}
 	.custom-chip {
 		padding: 0 0.5rem;

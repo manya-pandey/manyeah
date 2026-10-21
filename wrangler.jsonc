@@ -1,9 +1,5 @@
 /**
  * Wrangler config: https://developers.cloudflare.com/workers/wrangler/configuration/
- *
- * Before the first deploy, create the KV namespace that holds the brick count:
- *   npx wrangler kv namespace create BRICKS
- * and paste the id it prints below.
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
@@ -16,11 +12,4 @@
 		"binding": "ASSETS",
 		"directory": "./dist",
 	},
-
-	"kv_namespaces": [
-		{
-			"binding": "BRICKS",
-			"id": "REPLACE_WITH_KV_NAMESPACE_ID",
-		},
-	],
 }

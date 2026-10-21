@@ -1,7 +1,6 @@
 ---
 import { ROUTES, type RouteName } from "@/consts";
 import Doodle from "./Doodle.astro";
-import ThemePanel from "./ThemePanel.astro";
 
 interface Props {
 	current?: RouteName;
@@ -35,26 +34,19 @@ const { current, compact = false } = Astro.props;
 				</li>
 			))
 		}
-		<li class="theme-item" style="--tilt: 1.5deg">
-			<button
-				type="button"
-				data-theme-toggle
-				aria-expanded="false"
-				aria-controls="theme-panel"
-				title="Pick your own colours"
-			>
+		<li style="--tilt: 1.5deg">
+			<a href="/#about" title="About me">
 				<span class="frame">
 					<svg class="bracket" viewBox="0 0 10 56" aria-hidden="true">
 						<path d="M8.5 2.5c-2.6.2-4.8.1-6.3.6-.6 16.6-.5 33.2.2 49.8 1.6.4 3.8.4 6.1.6" />
 					</svg>
-					<Doodle name="theme" class="icon" />
+					<Doodle name="about" class="icon" />
 					<svg class="bracket bracket--r" viewBox="0 0 10 56" aria-hidden="true">
 						<path d="M8.5 2.5c-2.6.2-4.8.1-6.3.6-.6 16.6-.5 33.2.2 49.8 1.6.4 3.8.4 6.1.6" />
 					</svg>
 				</span>
-				<span class="label">theme</span>
-			</button>
-			<ThemePanel />
+				<span class="label">about</span>
+			</a>
 		</li>
 	</ul>
 </nav>
@@ -71,8 +63,7 @@ const { current, compact = false } = Astro.props;
 	li {
 		transform: rotate(var(--tilt));
 	}
-	a,
-	button {
+	a {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -84,17 +75,6 @@ const { current, compact = false } = Astro.props;
 		font-size: 1.6rem;
 		line-height: 1;
 		transition: color 0.2s ease;
-	}
-	button {
-		padding: 0;
-		border: 0;
-		background: none;
-		cursor: pointer;
-	}
-	.theme-item {
-		position: relative;
-		/* keep the open theme menu above everything else on the page */
-		z-index: 50;
 	}
 	.frame {
 		display: flex;
@@ -140,21 +120,15 @@ const { current, compact = false } = Astro.props;
 	}
 	a:hover,
 	a:focus-visible,
-	a[aria-current="page"],
-	button:hover,
-	button:focus-visible,
-	button[aria-expanded="true"] {
+	a[aria-current="page"] {
 		color: var(--accent);
 	}
 	a:hover .label::after,
 	a:focus-visible .label::after,
-	a[aria-current="page"] .label::after,
-	button:hover .label::after,
-	button[aria-expanded="true"] .label::after {
+	a[aria-current="page"] .label::after {
 		transform: scaleX(1);
 	}
-	a:hover :global(.icon),
-	button:hover :global(.icon) {
+	a:hover :global(.icon) {
 		transform: rotate(-8deg) scale(1.08);
 		animation: wobble 0.6s ease-in-out infinite alternate 0.3s;
 	}
@@ -167,8 +141,7 @@ const { current, compact = false } = Astro.props;
 		}
 	}
 
-	.doodle-nav--compact a,
-	.doodle-nav--compact button {
+	.doodle-nav--compact a {
 		font-size: 1.3rem;
 	}
 	.doodle-nav--compact .frame :global(.icon) {
@@ -183,12 +156,7 @@ const { current, compact = false } = Astro.props;
 		ul {
 			gap: 0.25rem;
 		}
-		/* untilted, so the theme menu can pin itself to the viewport */
-		.theme-item {
-			transform: none;
-		}
-		a,
-		button {
+		a {
 			font-size: 1.05rem;
 		}
 		.frame :global(.icon),

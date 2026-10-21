@@ -40,7 +40,7 @@ const themeIds = { light: THEMES.LIGHT.ID, dark: THEMES.DARK.ID };
 				const root = document.documentElement;
 				const KEY = "theme";
 				const darkQuery = matchMedia("(prefers-color-scheme: dark)");
-				const CUSTOM_VARS = ["--a", "--b", "--ink", "--muted", "--statue-opacity", "--statue-light", "--statue-ambient", "color-scheme"];
+				const CUSTOM_VARS = ["--a", "--b", "--ink", "--muted", "--statue-opacity", "--statue-light", "--statue-ambient", "--texture-opacity", "color-scheme"];
 
 				const hexToRgb = (hex) => {
 					let h = hex.replace("#", "");
@@ -104,6 +104,7 @@ const themeIds = { light: THEMES.LIGHT.ID, dark: THEMES.DARK.ID };
 					set("--statue-opacity", light ? "0.42" : "0.6");
 					set("--statue-ambient", light ? "0.25" : "0.7");
 					set("--statue-light", rgbToHex(hexToRgb(b).map((v) => v * 0.25 + 255 * 0.75)));
+					set("--texture-opacity", light ? "0.15" : "0.1");
 					set("color-scheme", light ? "light" : "dark");
 					root.dataset.palette = "custom";
 				}

@@ -10,6 +10,28 @@ export const SITE = {
 	TAGLINE: null as string | null,
 };
 
+// The About section under the landing page. Layout copied from LHRUN/one-space
+// (MIT). Everything here is placeholder until Manya fills it in.
+export const ABOUT = {
+	// Front of the flip card (pixel art) and the back (shown on hover).
+	PHOTO_PIXEL: "/about/avatar-pixel.png",
+	PHOTO: "/about/avatar.jpg",
+	PARAGRAPHS: [
+		"Hello, I'm Manya, a student who builds things and reads too many papers. Welcome to my personal space!",
+		"I work across internships, research and events, from running the Adobe event to speaking at the Google symposium. I care about doing things properly and making them a little delightful, and I'm always up for a project that teaches me something new.",
+		"If you'd like to get to know me better, the sections up top are a good place to start.",
+	],
+	EMAIL: "hello@example.com",
+	// Shown as the icon row, in this order. Remove any you don't use.
+	SOCIALS: [
+		{ NAME: "github", HREF: "https://github.com/" },
+		{ NAME: "twitter", HREF: "https://x.com/" },
+		{ NAME: "gmail", HREF: "mailto:hello@example.com" },
+		{ NAME: "telegram", HREF: "https://t.me/" },
+		{ NAME: "linkedin", HREF: "https://www.linkedin.com/" },
+	] as { NAME: "github" | "twitter" | "gmail" | "telegram" | "linkedin"; HREF: string }[],
+};
+
 // Any draco- or plain-.glb bust in /public works: Y up, facing +Z. The loader
 // centres and scales it. scripts/stl2glb.mjs makes one from an STL scan.
 export const STATUE = {
@@ -43,6 +65,3 @@ export const THEMES = {
 	LIGHT: { ID: "paper-clay", NAME: "Cream", A: "#f2eadb", B: "#b4532a" },
 	DARK: { ID: "midnight-chalk", NAME: "Midnight", A: "#131a24", B: "#ece6d8" },
 } as const;
-
-// Bricks per marble block.
-export const BRICKS_PER_MARBLE = 5;

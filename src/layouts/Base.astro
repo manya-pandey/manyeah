@@ -10,6 +10,7 @@ interface Props {
 const { title, description = SITE.DESCRIPTION } = Astro.props;
 const fullTitle = title ? `${title} · ${SITE.NAME}` : SITE.NAME;
 const themeIds = { light: THEMES.LIGHT.ID, dark: THEMES.DARK.ID };
+const presetIds = Object.values(THEMES).map((t) => t.ID);
 ---
 
 <!doctype html>
@@ -31,11 +32,11 @@ const themeIds = { light: THEMES.LIGHT.ID, dark: THEMES.DARK.ID };
 
 		<!--
 			Theme engine. Runs before first paint so a saved theme never flashes.
-			A choice is "auto" (cream or midnight, following the system), one of
-			those two by id, or a custom { a, b } pair of hex colours. The theme
+			A choice is "auto" (cream or midnight, following the system), a preset
+			id, or a custom { a, b } pair of hex colours. The theme
 			menu drives it through window.siteTheme.
 		-->
-		<script is:inline define:vars={{ themeIds }}>
+		<script is:inline define:vars={{ themeIds, presetIds }}>
 			(() => {
 				const root = document.documentElement;
 				const KEY = "theme";
@@ -78,7 +79,7 @@ const themeIds = { light: THEMES.LIGHT.ID, dark: THEMES.DARK.ID };
 				const read = () => {
 					try {
 						const saved = JSON.parse(localStorage.getItem(KEY) ?? "null");
-						if (saved === "auto" || Object.values(themeIds).includes(saved)) return saved;
+						if (saved === "auto" || presetIds.includes(saved)) return saved;
 						if (saved && isHex(saved.a) && isHex(saved.b)) return saved;
 					} catch {}
 					return "auto";

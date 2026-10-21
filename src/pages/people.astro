@@ -50,8 +50,6 @@ const people = (await getCollection("people")).sort((a, b) => a.data.order - b.d
 		transform: rotate(0) translateY(-2px);
 	}
 	h2 {
-		font-family: var(--font-display);
-		font-weight: 700;
 		font-size: 1.35rem;
 		letter-spacing: 0.03em;
 	}
@@ -63,8 +61,7 @@ const people = (await getCollection("people")).sort((a, b) => a.data.order - b.d
 		color: var(--accent);
 	}
 	.who {
-		font-family: var(--font-hand);
-		font-size: 1.3rem;
+		font-size: 0.95rem;
 		color: var(--accent);
 	}
 	.note {

@@ -44,12 +44,16 @@ npm run statue -- path/to/scan.stl public/statue.glb 120000 -90 0 0
 
 The last three numbers rotate the scan (degrees about X, Y and Z) so it ends up upright and facing the viewer; `-90 0 0` fixes the usual Z-up STL. Lower the triangle count for a smaller file. Then point `STATUE.SRC` in `src/consts.ts` at the new file. `STATUE.TURN` sets how far he looks to the side. Augustus has a flat back, so keep that small.
 
+## Type
+
+The whole site is set in Bree Serif (`--font-main` in `src/styles/global.css`). The only other face is JetBrains Mono, used just for the SPQR mark.
+
 ## The landing page
 
-- The nav stays pinned to the top as you scroll. The **about** button scrolls to the About section; the three-bar button at the end opens the menu.
+- The nav stays pinned to the top as you scroll. **about** scrolls to the About section; **menu** (the three bars, last in the nav) opens the menu.
 - **scroll** and **contact** boxes sit at the bottom of the first screen. Contact opens an email to `ABOUT.EMAIL`.
 - Below the first screen is the About section: a flip-card photo (pixel art on the front, the photo on hover) whose corners round off as it scrolls in, a row of contact icons, and a few paragraphs. The photos in `public/about/` are placeholders rendered from the statue.
-- At the very bottom a note points back up at the nav.
+- At the very bottom a note points up at the nav's **work** link.
 - The statue turns a full roll as the page scrolls.
 
 ## The theme menu
@@ -58,6 +62,7 @@ The three-bar menu holds quick links (about, résumé, contact) and the theme pi
 
 - **Auto** (the default) shows Cream in light mode and Midnight in dark mode, following the visitor's system.
 - **Cream** and **Midnight** pin one of them.
+- **Lavender** is `#c39ff9` fading into a soft pink (`#f8c5e2`) across the page, with deep violet (`#3f1d7a`) for links.
 - **Primary** (background) and **secondary** (accent) colours can each be dragged on hue, strength and shade bars, typed as a hex code (`#1e3a5f` or `#abc`), or picked from the colour well. The page, including the statue's lighting, updates as you drag.
 
 For a custom theme the text colour is worked out from the background (dark text on light backgrounds, light text on dark ones). The choice is saved in that visitor's browser only.

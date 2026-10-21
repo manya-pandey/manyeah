@@ -1,8 +1,8 @@
 ---
 import { ABOUT, SITE, THEMES } from "@/consts";
 
-// The three-bar menu at the end of the header: a few quick links, then the
-// theme controls. Visitors pick cream or midnight (or let their system
+// The panel behind the nav's three-bar "menu" button: a few quick links,
+// then the theme controls. Visitors pick cream or midnight (or let their system
 // decide), or drag the bars / type hex codes to make their own primary
 // (background) and secondary (accent) colours, live.
 const colours = [
@@ -10,22 +10,6 @@ const colours = [
 	{ key: "b", name: "Secondary", role: "accent" },
 ] as const;
 ---
-
-<div class="site-menu">
-<button
-	type="button"
-	class="burger"
-	data-menu-toggle
-	aria-expanded="false"
-	aria-controls="site-menu-panel"
-	aria-label="Menu"
->
-	<svg viewBox="0 0 32 32" aria-hidden="true">
-		<path class="bar-1" d="M6 9.6c6.6-.6 13.4-.7 20.2-.2" />
-		<path class="bar-2" d="M5.8 16.2c6.8-.4 13.6-.3 20.4.1" />
-		<path class="bar-3" d="M6.2 22.6c6.4-.5 13-.5 19.6 0" />
-	</svg>
-</button>
 
 <div id="site-menu-panel" class="panel" role="dialog" aria-labelledby="site-menu-title" hidden>
 	<div class="head">
@@ -55,14 +39,17 @@ const colours = [
 			<span>Auto</span>
 		</button>
 		{
-			[THEMES.LIGHT, THEMES.DARK].map((t) => (
+			[THEMES.LIGHT, THEMES.DARK, THEMES.LAVENDER].map((t) => (
 				<button
 					type="button"
 					role="radio"
 					data-preset={t.ID}
 					style={`--sa: ${t.A}; --sb: ${t.B};`}
 				>
-					<span class="swatch" aria-hidden="true" />
+					<span
+						class:list={["swatch", { "swatch--gradient": t.ID === THEMES.LAVENDER.ID }]}
+						aria-hidden="true"
+					/>
 					<span>{t.NAME}</span>
 				</button>
 			))
@@ -116,7 +103,6 @@ const colours = [
 		<span>Saved in this browser.</span>
 		<button type="button" class="reset" data-theme-reset>reset</button>
 	</div>
-</div>
 </div>
 
 <script>
@@ -254,58 +240,6 @@ const colours = [
 </script>
 
 <style>
-	.site-menu {
-		position: relative;
-		z-index: 50;
-	}
-	.burger {
-		display: grid;
-		place-items: center;
-		width: 2.9rem;
-		height: 2.9rem;
-		padding: 0;
-		border: 1.5px solid var(--ink);
-		border-radius: 6px 9px 7px 10px / 9px 6px 10px 7px;
-		background: color-mix(in oklab, var(--bg) 85%, transparent);
-		color: var(--ink);
-		cursor: pointer;
-		box-shadow: 2px 2px 0 var(--line);
-		transition:
-			color 0.2s,
-			transform 0.15s;
-	}
-	.burger:hover,
-	.burger[aria-expanded="true"] {
-		color: var(--accent);
-		border-color: var(--accent);
-	}
-	.burger:hover {
-		transform: rotate(-4deg);
-	}
-	.burger svg {
-		width: 1.8rem;
-		height: 1.8rem;
-		fill: none;
-		stroke: currentColor;
-		stroke-width: 2.2;
-		stroke-linecap: round;
-	}
-	.burger path {
-		transform-origin: 16px 16px;
-		transition:
-			transform 0.25s ease,
-			opacity 0.2s;
-	}
-	.burger[aria-expanded="true"] .bar-1 {
-		transform: translateY(6.5px) rotate(45deg);
-	}
-	.burger[aria-expanded="true"] .bar-2 {
-		opacity: 0;
-	}
-	.burger[aria-expanded="true"] .bar-3 {
-		transform: translateY(-6.5px) rotate(-45deg);
-	}
-
 	.panel {
 		position: absolute;
 		top: calc(100% + 0.7rem);
@@ -321,7 +255,6 @@ const colours = [
 		background: var(--bg);
 		color: var(--ink);
 		box-shadow: 5px 5px 0 var(--line);
-		font-family: var(--font-serif);
 		font-size: 1rem;
 		text-align: left;
 		animation: drop-in 0.18s ease-out;
@@ -353,16 +286,13 @@ const colours = [
 		gap: 0.6rem;
 	}
 	h2 {
-		font-family: var(--font-hand);
-		font-size: 1.7rem;
-		font-weight: 700;
+		font-size: 1.2rem;
 		line-height: 1;
 	}
 	.links {
 		display: flex;
 		gap: 1.1rem;
-		font-family: var(--font-hand);
-		font-size: 1.35rem;
+		font-size: 0.95rem;
 	}
 	.links a {
 		color: var(--ink);
@@ -382,9 +312,7 @@ const colours = [
 		border-top: 1.5px dashed var(--line);
 	}
 	h3 {
-		font-family: var(--font-display);
 		font-size: 0.8rem;
-		font-weight: 700;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 	}
@@ -393,8 +321,7 @@ const colours = [
 		border: 1.5px solid var(--accent);
 		border-radius: 999px 800px 900px 700px;
 		color: var(--accent);
-		font-family: var(--font-hand);
-		font-size: 1.05rem;
+		font-size: 0.75rem;
 	}
 	.custom-chip[hidden] {
 		display: none;
@@ -417,8 +344,8 @@ const colours = [
 
 	.presets {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 0.5rem;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 0.4rem;
 	}
 	.presets button {
 		display: flex;
@@ -430,8 +357,7 @@ const colours = [
 		border-radius: 6px;
 		background: transparent;
 		color: var(--ink);
-		font-family: var(--font-hand);
-		font-size: 1.15rem;
+		font-size: 0.85rem;
 		line-height: 1;
 		cursor: pointer;
 		transition: border-color 0.15s;
@@ -451,6 +377,9 @@ const colours = [
 		border: 1.5px solid var(--ink);
 		background: linear-gradient(135deg, var(--sa) 0 50%, var(--sb) 50% 100%);
 	}
+	.swatch--gradient {
+		background: linear-gradient(135deg, var(--sa), var(--sb));
+	}
 	.swatch--auto {
 		background: linear-gradient(90deg, var(--sa) 0 50%, var(--sb) 50% 100%);
 	}
@@ -458,7 +387,6 @@ const colours = [
 		margin-top: -0.4rem;
 		color: var(--muted);
 		font-size: 0.85rem;
-		font-style: italic;
 	}
 
 	.pick {
@@ -475,19 +403,14 @@ const colours = [
 		float: left;
 		width: 100%;
 		margin-bottom: 0.15rem;
-		font-family: var(--font-display);
 		font-size: 0.8rem;
-		font-weight: 700;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 	}
 	legend span {
 		color: var(--muted);
-		font-weight: 500;
 		letter-spacing: 0.06em;
 		text-transform: none;
-		font-family: var(--font-serif);
-		font-style: italic;
 		font-size: 0.95rem;
 	}
 	.pick-row {
@@ -529,7 +452,6 @@ const colours = [
 		border-radius: 4px;
 		background: color-mix(in oklab, var(--ink) 5%, var(--bg));
 		color: var(--ink);
-		font-family: var(--font-mono);
 		font-size: 0.9rem;
 		letter-spacing: 0.04em;
 		text-transform: lowercase;
@@ -548,8 +470,7 @@ const colours = [
 		grid-template-columns: 4.2rem 1fr;
 		align-items: center;
 		gap: 0.5rem;
-		font-family: var(--font-hand);
-		font-size: 1.1rem;
+		font-size: 0.8rem;
 		color: var(--muted);
 	}
 	.bar {
@@ -633,14 +554,12 @@ const colours = [
 		border-top: 1.5px dashed var(--line);
 		color: var(--muted);
 		font-size: 0.85rem;
-		font-style: italic;
 	}
 	.reset {
 		border: 0;
 		background: none;
 		color: var(--accent);
-		font-family: var(--font-hand);
-		font-size: 1.2rem;
+		font-size: 0.85rem;
 		cursor: pointer;
 		text-decoration: underline;
 		text-underline-offset: 3px;

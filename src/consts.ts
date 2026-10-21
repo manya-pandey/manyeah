@@ -64,4 +64,6 @@ export const ROUTES: { NAME: RouteName; PATH: string; BLURB: string }[] = [
 export const THEMES = {
 	LIGHT: { ID: "paper-clay", NAME: "Cream", A: "#f2eadb", B: "#b4532a" },
 	DARK: { ID: "midnight-chalk", NAME: "Midnight", A: "#131a24", B: "#ece6d8" },
+	// Picked from the menu only. B here is the far end of its background gradient.
+	LAVENDER: { ID: "lavender", NAME: "Lavender", A: "#c39ff9", B: "#f8c5e2" },
 } as const;

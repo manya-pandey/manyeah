@@ -1,20 +1,12 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-@import "@fontsource/cinzel/500.css";
-@import "@fontsource/cinzel/700.css";
-@import "@fontsource/eb-garamond/400.css";
-@import "@fontsource/eb-garamond/400-italic.css";
-@import "@fontsource/eb-garamond/600.css";
-@import "@fontsource/caveat/500.css";
-@import "@fontsource/caveat/700.css";
-@import "@fontsource/jetbrains-mono/700.css";
 @import "@fontsource/bree-serif/400.css";
+@import "@fontsource/jetbrains-mono/700.css";
 
 @theme {
-	--font-display: "Cinzel", "Trajan Pro", serif;
-	--font-serif: "EB Garamond", Georgia, serif;
-	--font-hand: "Caveat", "Comic Sans MS", cursive;
+	/* One face for the whole site. Mono is only for the SPQR mark. */
+	--font-main: "Bree Serif", Georgia, serif;
 	--font-mono: "JetBrains Mono", ui-monospace, monospace;
 
 	--color-bg: var(--bg);
@@ -57,6 +49,23 @@
 	--texture-opacity: 0.1;
 }
 
+:root[data-palette="lavender"] {
+	color-scheme: light;
+	--a: #c39ff9;
+	--b: #f8c5e2;
+	--bg: var(--a);
+	/* lavender into a soft pink, fixed to the viewport */
+	--bg-gradient: linear-gradient(165deg, #c39ff9 0%, #dcb2f0 45%, #f8c5e2 100%);
+	--ink: #1e1233;
+	--muted: #4f3d6e;
+	--accent: #3f1d7a;
+	--line: color-mix(in oklab, var(--ink) 20%, transparent);
+	--statue-opacity: 0.45;
+	--statue-light: #f3e8ff;
+	--statue-ambient: 0.3;
+	--texture-opacity: 0.15;
+}
+
 html {
 	scroll-behavior: smooth;
 	background: var(--bg);
@@ -64,9 +73,14 @@ html {
 }
 
 body {
-	background: var(--bg);
+	background-color: var(--bg);
+	/* themes with a gradient (lavender) paint it over the flat colour */
+	background-image: var(--bg-gradient, none);
+	background-attachment: fixed;
 	color: var(--ink);
-	font-family: var(--font-serif);
+	font-family: var(--font-main);
+	/* Bree Serif has one weight; never fake bold or italic. */
+	font-synthesis: none;
 	transition: color 0.4s ease;
 	-webkit-font-smoothing: antialiased;
 }
@@ -112,7 +126,6 @@ body {
 	border-radius: 4px;
 	background: color-mix(in oklab, var(--ink) 10%, transparent);
 	font-size: 0.85em;
-	font-weight: 500;
 }
 .prose code::before,
 .prose code::after {

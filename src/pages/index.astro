@@ -2,7 +2,6 @@
 import About from "@/components/About.astro";
 import DoodleNav from "@/components/DoodleNav.astro";
 import Loader from "@/components/Loader.astro";
-import SiteMenu from "@/components/SiteMenu.astro";
 import Statue from "@/components/Statue.astro";
 import { ABOUT, SITE, STATUE } from "@/consts";
 import Base from "@/layouts/Base.astro";
@@ -15,7 +14,6 @@ import Base from "@/layouts/Base.astro";
 	<header class="top" data-top>
 		<div class="top-inner">
 			<DoodleNav />
-			<SiteMenu />
 		</div>
 	</header>
 
@@ -62,26 +60,38 @@ import Base from "@/layouts/Base.astro";
 		<About />
 	</main>
 
-	<!-- Once the visitor reaches the end, point them back at the nav. -->
+	<!-- Once the visitor reaches the end, point them back at the nav's "work" link. -->
 	<div class="end-hint" data-end-hint>
 		<svg viewBox="0 0 60 70" aria-hidden="true">
 			<path d="M40 66c-14-4-26-16-26-34 0-9 2-17 6-25" />
 			<path d="M10.6 15.4c3-3.6 6.2-7.4 9.6-11 2 4.4 3.8 8.8 5.2 13.4" />
 		</svg>
-		<p>Now pick a page up here to see the rest.</p>
+		<p>Start with work up here, then explore the rest.</p>
 	</div>
 </Base>
 
 <script>
 	const top = document.querySelector<HTMLElement>("[data-top]")!;
 	const hint = document.querySelector<HTMLElement>("[data-end-hint]")!;
+	const work = document.querySelector<HTMLElement>('[data-route="work"]')!;
+	// The arrow's tip sits 14px in from the hint's left edge.
+	function placeHint() {
+		const r = work.getBoundingClientRect();
+		hint.style.left = `${r.left + r.width / 2 - 14}px`;
+		hint.style.top = `${r.bottom + 4}px`;
+	}
 	function onScroll() {
 		top.classList.toggle("is-stuck", window.scrollY > 12);
 		const atEnd =
 			window.scrollY > 40 &&
 			window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60;
+		if (atEnd && !hint.classList.contains("is-shown")) {
+			// wait for the pinned nav to finish shrinking before measuring
+			setTimeout(placeHint, 260);
+		}
 		hint.classList.toggle("is-shown", atEnd);
 	}
+	window.addEventListener("resize", placeHint);
 	window.addEventListener("scroll", onScroll, { passive: true });
 	window.addEventListener("resize", onScroll);
 	onScroll();
@@ -134,12 +144,14 @@ import Base from "@/layouts/Base.astro";
 	.top.is-stuck :global(.doodle-nav .bracket) {
 		height: 2.4rem;
 	}
-	.top.is-stuck :global(.doodle-nav a) {
-		font-size: 1.3rem;
+	.top.is-stuck :global(.doodle-nav a),
+	.top.is-stuck :global(.doodle-nav button) {
+		font-size: 0.95rem;
 	}
 	.top :global(.doodle-nav .icon),
 	.top :global(.doodle-nav .bracket),
-	.top :global(.doodle-nav a) {
+	.top :global(.doodle-nav a),
+	.top :global(.doodle-nav button) {
 		transition: all 0.25s ease;
 	}
 
@@ -160,8 +172,6 @@ import Base from "@/layouts/Base.astro";
 		padding-left: clamp(0rem, 6vw, 7rem);
 	}
 	.name {
-		font-family: var(--font-display);
-		font-weight: 700;
 		font-size: clamp(3rem, 9vw, 6.5rem);
 		line-height: 0.95;
 		letter-spacing: 0.04em;
@@ -175,7 +185,6 @@ import Base from "@/layouts/Base.astro";
 	}
 	.tagline {
 		margin-top: 0.4rem;
-		font-style: italic;
 		color: var(--muted);
 	}
 	.resume {
@@ -186,8 +195,6 @@ import Base from "@/layouts/Base.astro";
 		padding-bottom: 0.1rem;
 		border-bottom: 1.5px solid var(--accent);
 		color: var(--accent);
-		font-family: var(--font-display);
-		font-weight: 500;
 		font-size: 0.95rem;
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
@@ -240,8 +247,7 @@ import Base from "@/layouts/Base.astro";
 		background: color-mix(in oklab, var(--bg) 85%, transparent);
 		box-shadow: 3px 3px 0 var(--ink);
 		color: var(--ink);
-		font-family: var(--font-hand);
-		font-size: 1.45rem;
+		font-size: 1.05rem;
 		line-height: 1;
 		text-decoration: none;
 		white-space: nowrap;
@@ -289,12 +295,11 @@ import Base from "@/layouts/Base.astro";
 	.end-hint {
 		position: fixed;
 		top: 5.6rem;
-		left: 50%;
+		left: 2rem;
 		z-index: 25;
 		display: flex;
 		align-items: flex-start;
 		gap: 0.4rem;
-		translate: -50% 0;
 		color: var(--accent);
 		pointer-events: none;
 		opacity: 0;
@@ -325,8 +330,7 @@ import Base from "@/layouts/Base.astro";
 		border-radius: 4px 9px 5px 8px / 9px 4px 8px 5px;
 		background: var(--bg);
 		box-shadow: 3px 3px 0 var(--line);
-		font-family: var(--font-hand);
-		font-size: 1.5rem;
+		font-size: 1.1rem;
 		line-height: 1.1;
 		text-wrap: balance;
 	}
@@ -347,12 +351,17 @@ import Base from "@/layouts/Base.astro";
 		.top-inner {
 			gap: 0.4rem;
 		}
-		.top :global(.site-menu .burger) {
-			width: 2.4rem;
-			height: 2.4rem;
+		/* phones keep the nav at its already-small size when pinned */
+		.top.is-stuck :global(.doodle-nav a),
+		.top.is-stuck :global(.doodle-nav button) {
+			font-size: 0.72rem;
 		}
-		.end-hint {
-			top: 4.8rem;
+		.top.is-stuck :global(.doodle-nav .icon) {
+			width: 1.9rem;
+			height: 1.9rem;
+		}
+		.top.is-stuck :global(.doodle-nav .bracket) {
+			height: 2.3rem;
 		}
 	}
 </style>

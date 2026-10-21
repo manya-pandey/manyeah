@@ -14,7 +14,7 @@ const { current, compact = false } = Astro.props;
 <nav aria-label="Sections" class:list={["doodle-nav", { "doodle-nav--compact": compact }]}>
 	<ul>
 		<li style="--tilt: 1.5deg">
-			<a href="/#whoami" data-route="whoami" title="Who I am">
+			<a href="/#whoami" data-route="whoami">
 				<span class="frame">
 					<svg class="bracket" viewBox="0 0 10 56" aria-hidden="true">
 						<path d="M8.5 2.5c-2.6.2-4.8.1-6.3.6-.6 16.6-.5 33.2.2 49.8 1.6.4 3.8.4 6.1.6" />
@@ -34,7 +34,6 @@ const { current, compact = false } = Astro.props;
 						href={route.PATH}
 						data-route={route.NAME}
 						aria-current={current === route.NAME ? "page" : undefined}
-						title={route.BLURB}
 					>
 						<span class="frame">
 							<svg class="bracket" viewBox="0 0 10 56" aria-hidden="true">
@@ -56,7 +55,6 @@ const { current, compact = false } = Astro.props;
 				data-menu-toggle
 				aria-expanded="false"
 				aria-controls="site-menu-panel"
-				title="Links and theme"
 			>
 				<span class="frame">
 					<svg class="bracket" viewBox="0 0 10 56" aria-hidden="true">

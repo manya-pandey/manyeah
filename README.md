@@ -20,7 +20,7 @@ The dev server runs the brick API against a local KV store, so bricks work offli
 | Want to change…                         | Edit                                     |
 | --------------------------------------- | ---------------------------------------- |
 | Name, intro, résumé link, tagline       | `src/consts.ts` → `SITE`                 |
-| The statue                              | drop a `.glb` in `public/`, set `STATUE` |
+| The statue                              | `npm run statue` (below), set `STATUE`   |
 | Palettes (swatch colours)               | `src/consts.ts` → `PALETTES`             |
 | Palettes (text/accent/statue lighting)  | `src/styles/global.css`                  |
 | Work / research / people / snippets     | add a `.md` file in `src/content/<name>/`|
@@ -33,6 +33,16 @@ The dev server runs the brick API against a local KV store, so bricks work offli
 Front-matter fields for each section are defined in `src/content.config.ts`. Everything in `src/content` right now is placeholder text.
 
 **Résumé:** put the PDF at `public/resume.pdf`. The landing-page link already points there.
+
+## The statue
+
+The bust is a scan of Augustus, cut from a 16 MB, 323k-triangle STL down to a 300 KB Draco-compressed `.glb` (120k triangles). To swap in another scan:
+
+```sh
+npm run statue -- path/to/scan.stl public/statue.glb 120000 -90 0 0
+```
+
+The last three numbers rotate the scan (degrees about X, Y and Z) so it ends up upright and facing the viewer; `-90 0 0` fixes the usual Z-up STL. Lower the triangle count for a smaller file. Then point `STATUE.SRC` in `src/consts.ts` at the new file. `STATUE.TURN` sets how far he looks to the side. Augustus has a flat back, so keep that small.
 
 ## The bricks
 
@@ -50,7 +60,7 @@ Set the real domain in `astro.config.mjs` (`site`).
 
 ## Open items (from the design doc)
 
-- **Statue pick**: currently *Portrait of a Man* (Three D Scans), the same scan one-space uses. The loader centres and scales any bust you swap in.
+- **Statue credit**: the footer says "statue: Augustus". Add the scan's source to `STATUE.CREDIT` / `STATUE.CREDIT_URL` if it needs attribution.
 - **Final palette set and default**: the first entry in `PALETTES` is the default.
 - **Tagline**: "a city of bricks, left in marble" isn't approved yet. Set `SITE.TAGLINE` to show one.
 - **Overall design**: the layout follows the paper sketch (`design/sketch.webp`).

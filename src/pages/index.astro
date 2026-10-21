@@ -33,7 +33,15 @@ import Base from "@/layouts/Base.astro";
 		</main>
 
 		<footer class="bottom">
-			<a class="credit" href={STATUE.CREDIT_URL} rel="noopener">statue: {STATUE.CREDIT}</a>
+			{
+				STATUE.CREDIT_URL ? (
+					<a class="credit" href={STATUE.CREDIT_URL} rel="noopener">
+						statue: {STATUE.CREDIT}
+					</a>
+				) : (
+					<span class="credit">statue: {STATUE.CREDIT}</span>
+				)
+			}
 			<BrickWall />
 		</footer>
 	</div>

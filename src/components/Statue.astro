@@ -3,7 +3,7 @@ import { STATUE } from "@/consts";
 ---
 
 <!-- The floating statue behind the landing page. Rendering approach adapted from LHRUN/one-space (MIT). -->
-<div id="statue" class="statue" data-src={STATUE.SRC} data-draco="/draco/" aria-hidden="true"></div>
+<div id="statue" class="statue" data-src={STATUE.SRC} data-draco="/draco/" data-turn={STATUE.TURN} aria-hidden="true"></div>
 
 <script>
 	import * as THREE from "three";
@@ -55,6 +55,7 @@ import { STATUE } from "@/consts";
 			ambient.intensity = cssNumber("--statue-ambient", 0.25);
 		}).observe(document.documentElement, { attributes: true, attributeFilter: ["data-palette"] });
 
+		const baseY = Number(container.dataset.turn) || 0;
 		const pivot = new THREE.Group();
 		scene.add(pivot);
 
@@ -78,11 +79,10 @@ import { STATUE } from "@/consts";
 				const size = box.getSize(new THREE.Vector3());
 				const centre = box.getCenter(new THREE.Vector3());
 				model.position.sub(centre);
-				const scale = 3.2 / Math.max(size.x, size.y, size.z);
+				const scale = 2.7 / Math.max(size.x, size.y, size.z);
 				pivot.scale.setScalar(scale);
 				pivot.add(model);
-				// Turn the default scan to face the viewer, slightly in profile.
-				pivot.rotation.y = -Math.PI / 2 + 0.35;
+				pivot.rotation.y = baseY;
 
 				container.classList.add("statue--in");
 				draco.dispose();
@@ -121,7 +121,6 @@ import { STATUE } from "@/consts";
 		});
 
 		const startedAt = performance.now();
-		const baseY = -Math.PI / 2 + 0.35;
 		function tick() {
 			if (!visible) return;
 			const t = (performance.now() - startedAt) / 1000;

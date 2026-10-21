@@ -10,12 +10,15 @@ export const SITE = {
 	TAGLINE: null as string | null,
 };
 
-// Statue pick is an open item. Any draco- or plain-.glb bust dropped into
-// /public works; the loader centres and scales it.
+// Any draco- or plain-.glb bust in /public works: Y up, facing +Z. The loader
+// centres and scales it. scripts/stl2glb.mjs makes one from an STL scan.
 export const STATUE = {
-	SRC: "/statue.glb",
-	CREDIT: "Portrait of a Man, Three D Scans",
-	CREDIT_URL: "https://threedscans.com/uncategorized/portrait-of-a-man/",
+	SRC: "/augustus.glb",
+	// Resting turn in radians; negative looks toward the name on the left.
+	// The scan has a flat back, so keep this (plus the sway) well under 90°.
+	TURN: -0.3,
+	CREDIT: "Augustus",
+	CREDIT_URL: undefined as string | undefined,
 };
 
 export type RouteName = "work" | "research" | "people" | "blogs" | "snippets";

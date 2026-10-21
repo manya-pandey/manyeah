@@ -1,15 +1,27 @@
 ---
+import { MOTTO } from "@/consts";
 import SpqrMark from "./SpqrMark.astro";
+
+const chars = [...MOTTO.LATIN];
 ---
 
 <!--
-	Loading screen. Shown once per browser session on the landing page; it
-	lifts when the statue has loaded (or after a timeout, so it never traps
+	Loading screen. Shown once per browser session on the landing page, in
+	the current theme. The SPQR mark draws itself, the motto types out
+	beneath it, then the translation fades in. It lifts when the statue has
+	loaded and the motto has finished (or after a timeout, so it never traps
 	anyone behind a slow connection).
 -->
 <div id="loader" class="loader" aria-hidden="true">
-	<SpqrMark animated class="w-[min(520px,82vw)]" />
-	<p class="loader-status font-mono">laying foundations<span class="cursor">_</span></p>
+	<div class="grain" aria-hidden="true"></div>
+	<SpqrMark animated class="mark" />
+	<p class="motto">
+		{chars.map((c, i) => <span style={`--i: ${i}`}>{c}</span>)}<span
+			class="caret"
+			style={`--i: ${chars.length}`}>|</span
+		>
+	</p>
+	<p class="translation">{MOTTO.ENGLISH}</p>
 </div>
 
 <script is:inline>
@@ -26,8 +38,8 @@ import SpqrMark from "./SpqrMark.astro";
 			return;
 		}
 		const shownAt = performance.now();
-		const MIN_MS = 1900;
-		const MAX_MS = 5000;
+		const MIN_MS = 3600;
+		const MAX_MS = 6500;
 		let done = false;
 		const lift = () => {
 			if (done) return;
@@ -53,29 +65,67 @@ import SpqrMark from "./SpqrMark.astro";
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 2rem;
-		background: #070908;
+		gap: 0.6rem;
+		padding-inline: 1rem;
+		background-color: var(--bg);
+		background-image: var(--bg-gradient, none);
+		color: var(--ink);
+		text-align: center;
 		transition:
-			opacity 0.6s ease,
-			visibility 0.6s;
+			opacity 0.7s ease,
+			visibility 0.7s;
 	}
 	.loader--out {
 		opacity: 0;
 		visibility: hidden;
 	}
-	.loader-status {
-		color: #3cf2a0;
-		opacity: 0.55;
-		font-size: 0.75rem;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
+	.loader :global(.mark) {
+		width: min(360px, 70vw);
+		margin-bottom: 1rem;
 	}
-	.cursor {
-		animation: blink 1s steps(1) infinite;
+
+	/* the motto types itself out, letter by letter */
+	.motto {
+		font-size: clamp(1.05rem, 3.2vw, 1.5rem);
+		letter-spacing: 0.02em;
+	}
+	.motto span {
+		opacity: 0;
+		animation: type 0.01s linear forwards;
+		animation-delay: calc(1.25s + var(--i) * 45ms);
+	}
+	.motto .caret {
+		color: var(--accent);
+		margin-left: 0.05em;
+		animation:
+			type 0.01s linear forwards,
+			blink 0.9s steps(1) infinite;
+		animation-delay: calc(1.25s + var(--i) * 45ms), calc(1.25s + var(--i) * 45ms);
+	}
+	.translation {
+		color: var(--muted);
+		font-size: clamp(0.85rem, 2.4vw, 1rem);
+		opacity: 0;
+		animation: fade 0.6s ease forwards 3s;
+	}
+	@keyframes type {
+		to {
+			opacity: 1;
+		}
 	}
 	@keyframes blink {
 		50% {
 			opacity: 0;
+		}
+	}
+	@keyframes fade {
+		from {
+			opacity: 0;
+			transform: translateY(4px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
 		}
 	}
 </style>

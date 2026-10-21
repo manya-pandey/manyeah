@@ -20,7 +20,7 @@ const blurb = Astro.props.blurb ?? (title ? undefined : route?.BLURB);
 ---
 
 <Base title={title ?? section} description={description ?? blurb ?? route?.BLURB}>
-	<div class="page">
+	<div class="page" data-text-column>
 		<header class="head">
 			<a href="/" class="home">{SITE.NAME}</a>
 		</header>

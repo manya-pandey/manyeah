@@ -1,6 +1,6 @@
 # manyeah
 
-Personal site: a techno SPQR loading screen, a floating statue that rolls as you scroll, five doodled sections, an About section, and a menu with a theme picker (cream, midnight, or your own colours).
+Personal site: an SPQR loading screen (Scientia Per Quaestionem Reperitur), a floating statue that rolls as you scroll, doodled sections, a whoami section, and a menu with a theme picker (cream, midnight, lavender, or your own colours).
 
 Built with [Astro](https://astro.build), Tailwind and three.js, deployed on Cloudflare Workers. Inspired by [abhi.now](https://abhi.now) (doodled section links) and [one-space](https://github.com/LHRUN/one-space) (MIT): the floating, scroll-rolling statue, the background texture (`public/background.png`), the About section layout and its github / twitter / gmail / telegram icons come from one-space.
 
@@ -27,7 +27,7 @@ npm run check      # type-check
 | Blog posts                              | `src/content/blogs/*.md`                 |
 | Favourite quotes                        | `src/content/quotes.json`                |
 | Section doodles                         | `src/components/Doodle.astro`            |
-| Loading screen / SPQR mark              | `src/components/SpqrMark.astro`          |
+| Loading screen / SPQR mark              | `src/components/Loader.astro`, `SpqrMark.astro` |
 | Favicons                                | `design/favicon*.svg` → PNGs in `public/`|
 
 Front-matter fields for each section are defined in `src/content.config.ts`. Everything in `src/content` right now is placeholder text.
@@ -50,19 +50,25 @@ The last three numbers rotate the scan (degrees about X, Y and Z) so it ends up 
 
 ## Type
 
-The whole site is set in Bree Serif (`--font-main` in `src/styles/global.css`). The only other face is JetBrains Mono, used just for the SPQR mark.
+The whole site, the SPQR mark included, is set in Bree Serif (`--font-main` in `src/styles/global.css`).
+
+## SPQR
+
+On this site SPQR stands for *Scientia Per Quaestionem Reperitur*, "knowledge is found through questioning" (`MOTTO` in `src/consts.ts`). The loading screen draws the mark (SPQR between the nav's hand-drawn brackets) in the current theme, types the motto out beneath it, then fades in the translation. The tab icon is the same mark (`design/favicon*.svg`, rendered to the PNGs in `public/`).
 
 ## The landing page
 
-- The nav stays pinned to the top as you scroll. **about** scrolls to the About section; **menu** (the three bars, last in the nav) opens the menu.
-- **scroll** and **contact** boxes sit at the bottom of the first screen. Contact opens an email to `ABOUT.EMAIL`.
+- The nav stays pinned to the top as you scroll. **whoami** (first in the nav) scrolls to the About section; **menu** (the three bars, last) opens the menu.
+- **scroll** and **contact** boxes sit at the bottom of the first screen. Contact (here and in the menu) opens a card with the email, a copy button, and the GitHub and LinkedIn links.
 - Below the first screen is the About section: a flip-card photo (pixel art on the front, the photo on hover) whose corners round off as it scrolls in, a row of contact icons, and a few paragraphs. The photos in `public/about/` are placeholders rendered from the statue.
-- At the very bottom a note points up at the nav's **work** link.
+- At the very bottom, a strip slides out of the pinned nav with an arrow up at **work**.
 - The statue turns a full roll as the page scrolls.
 
 ## Bricks on the section pages
 
-Every section page (work, research, people, blogs, snippets, résumé) has a dashed outline of five bricks in the bottom-right corner. Clicking the outline lays a brick. The fifth turns the course into a marble column that rises up the page, solid in the bottom quarter of the screen and fading out above it, and the empty outline steps left to start the next column. Up to six columns show. The count is kept in the visitor's own browser and shared across the section pages (`src/components/Colonnade.astro`).
+Every section page (work, research, people, blogs, snippets, résumé) has a dashed outline of five bricks at the bottom of the screen. Clicking the outline lays a brick. The fifth turns the course into a marble column that rises up the page, solid in the bottom quarter of the screen and fading out above it, and the outline steps on to the next spot.
+
+Columns only stand in the empty margins either side of the text, never behind it, filling right to left: the right margin from the screen edge inwards, then the left margin from beside the text out to the far edge. When every spot is full, the colonnade fades and starts again from zero. How many fit depends on the window width; on screens too narrow for any, the feature hides. The count is kept in the visitor's own browser (`src/components/Colonnade.astro`).
 
 - The statue glides from beside the name to the middle of the screen as the About section scrolls in.
 

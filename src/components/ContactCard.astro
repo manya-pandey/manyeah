@@ -1,0 +1,182 @@
+---
+import { ABOUT } from "@/consts";
+
+// The contact card, opened by anything with [data-contact-open]. It shows
+// the email as text with a copy button rather than relying on mailto:,
+// which does nothing for people without a mail app set up.
+const links = ABOUT.SOCIALS.filter((s) => !s.HREF.startsWith("mailto:"));
+const pretty = (href: string) => href.replace(/^https?:\/\/(www\.)?/, "");
+---
+
+<dialog class="contact" data-contact aria-labelledby="contact-title">
+	<div class="head">
+		<h2 id="contact-title">say hello</h2>
+		<button type="button" class="close" data-contact-close aria-label="Close">×</button>
+	</div>
+
+	<p class="label">email</p>
+	<div class="email-row">
+		<span class="email" data-email>{ABOUT.EMAIL}</span>
+		<button type="button" class="copy" data-copy>copy</button>
+	</div>
+	<a class="write" href={`mailto:${ABOUT.EMAIL}`}>open in your mail app ↗</a>
+
+	<p class="label">elsewhere</p>
+	<ul>
+		{
+			links.map((l) => (
+				<li>
+					<span>{l.NAME}</span>
+					<a href={l.HREF} target="_blank" rel="noopener">
+						{pretty(l.HREF)} ↗
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</dialog>
+
+<script>
+	const dialog = document.querySelector<HTMLDialogElement>("[data-contact]")!;
+	const copy = dialog.querySelector<HTMLButtonElement>("[data-copy]")!;
+	const email = dialog.querySelector<HTMLElement>("[data-email]")!;
+
+	document.addEventListener("click", (e) => {
+		const opener = (e.target as Element).closest("[data-contact-open]");
+		if (opener) {
+			e.preventDefault();
+			copy.textContent = "copy";
+			dialog.showModal();
+		}
+	});
+	dialog.querySelector("[data-contact-close]")!.addEventListener("click", () => dialog.close());
+	// click on the backdrop closes it
+	dialog.addEventListener("click", (e) => {
+		if (e.target === dialog) dialog.close();
+	});
+
+	copy.addEventListener("click", async () => {
+		try {
+			await navigator.clipboard.writeText(email.textContent!.trim());
+			copy.textContent = "copied";
+		} catch {
+			// Clipboard refused: select the address so it can be copied by hand.
+			const range = document.createRange();
+			range.selectNodeContents(email);
+			const sel = getSelection()!;
+			sel.removeAllRanges();
+			sel.addRange(range);
+			copy.textContent = "selected";
+		}
+	});
+</script>
+
+<style>
+	.contact {
+		/* the CSS reset zeroes margins; auto puts the dialog back in the centre */
+		margin: auto;
+		width: min(24rem, calc(100vw - 2rem));
+		padding: 1.1rem 1.25rem 1.25rem;
+		border: 1.5px solid var(--ink);
+		border-radius: 4px 9px 5px 8px / 9px 4px 8px 5px;
+		background: var(--bg);
+		color: var(--ink);
+		box-shadow: 6px 6px 0 var(--line);
+	}
+	.contact::backdrop {
+		background: color-mix(in oklab, var(--ink) 25%, transparent);
+	}
+	.contact[open] {
+		animation: pop 0.18s ease-out;
+	}
+	@keyframes pop {
+		from {
+			opacity: 0;
+			transform: translateY(8px);
+		}
+	}
+	.head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 0.6rem;
+	}
+	h2 {
+		font-size: 1.3rem;
+	}
+	.close {
+		width: 1.8rem;
+		height: 1.8rem;
+		border: 0;
+		background: none;
+		color: var(--muted);
+		font-size: 1.5rem;
+		line-height: 1;
+		cursor: pointer;
+	}
+	.close:hover {
+		color: var(--accent);
+	}
+	.label {
+		margin-top: 0.9rem;
+		color: var(--muted);
+		font-size: 0.75rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+	.email-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: 0.3rem;
+	}
+	.email {
+		flex: 1;
+		min-width: 0;
+		padding: 0.4rem 0.6rem;
+		border: 1.5px solid var(--line);
+		border-radius: 4px;
+		background: color-mix(in oklab, var(--ink) 5%, var(--bg));
+		overflow-wrap: anywhere;
+		user-select: all;
+	}
+	.copy {
+		padding: 0.4rem 0.75rem;
+		border: 1.5px solid var(--ink);
+		border-radius: 4px;
+		background: none;
+		color: var(--ink);
+		box-shadow: 2px 2px 0 var(--ink);
+		cursor: pointer;
+	}
+	.copy:hover {
+		color: var(--accent);
+		box-shadow: 2px 2px 0 var(--accent);
+	}
+	.write {
+		display: inline-block;
+		margin-top: 0.45rem;
+		color: var(--muted);
+		font-size: 0.85rem;
+	}
+	ul {
+		display: grid;
+		gap: 0.35rem;
+		margin-top: 0.3rem;
+		padding: 0;
+		list-style: none;
+	}
+	li {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+	li span {
+		color: var(--muted);
+	}
+	li a,
+	.write {
+		color: var(--accent);
+		text-underline-offset: 3px;
+	}
+</style>

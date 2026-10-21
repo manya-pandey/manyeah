@@ -1,5 +1,5 @@
 ---
-import { ABOUT, SITE, THEMES } from "@/consts";
+import { SITE, THEMES } from "@/consts";
 
 // The panel behind the nav's three-bar "menu" button: a few quick links,
 // then the theme controls. Visitors pick cream or midnight (or let their system
@@ -18,9 +18,9 @@ const colours = [
 	</div>
 
 	<nav class="links" aria-label="Quick links">
-		<a href="/#about" data-menu-link>about</a>
+		<a href="/#whoami" data-menu-link>whoami</a>
 		<a href={SITE.RESUME}>résumé</a>
-		<a href={`mailto:${ABOUT.EMAIL}`}>contact</a>
+		<a href="#contact" data-contact-open data-menu-link>contact</a>
 	</nav>
 
 	<div class="theme-head">
@@ -35,7 +35,7 @@ const colours = [
 			data-preset="auto"
 			style={`--sa: ${THEMES.LIGHT.A}; --sb: ${THEMES.DARK.A};`}
 		>
-			<span class="swatch swatch--auto" aria-hidden="true"></span>
+			<span class="swatch" aria-hidden="true"></span>
 			<span>Auto</span>
 		</button>
 		{
@@ -46,10 +46,7 @@ const colours = [
 					data-preset={t.ID}
 					style={`--sa: ${t.A}; --sb: ${t.B};`}
 				>
-					<span
-						class:list={["swatch", { "swatch--gradient": t.ID === THEMES.LAVENDER.ID }]}
-						aria-hidden="true"
-					/>
+					<span class="swatch" aria-hidden="true" />
 					<span>{t.NAME}</span>
 				</button>
 			))
@@ -222,7 +219,9 @@ const colours = [
 		open(false);
 		toggle.focus();
 	});
-	panel.querySelector("[data-menu-link]")!.addEventListener("click", () => open(false));
+	panel
+		.querySelectorAll("[data-menu-link]")
+		.forEach((link) => link.addEventListener("click", () => open(false)));
 	document.addEventListener("pointerdown", (e) => {
 		const target = e.target as Node;
 		if (!panel.hidden && !panel.contains(target) && !toggle.contains(target)) open(false);
@@ -375,12 +374,7 @@ const colours = [
 		height: 1.7rem;
 		border-radius: 999px;
 		border: 1.5px solid var(--ink);
-		background: linear-gradient(135deg, var(--sa) 0 50%, var(--sb) 50% 100%);
-	}
-	.swatch--gradient {
-		background: linear-gradient(135deg, var(--sa), var(--sb));
-	}
-	.swatch--auto {
+		/* every circle is halved: left half one colour, right half the other */
 		background: linear-gradient(90deg, var(--sa) 0 50%, var(--sb) 50% 100%);
 	}
 	.auto-note {

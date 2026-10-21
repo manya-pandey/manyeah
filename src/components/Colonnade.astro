@@ -1,10 +1,15 @@
 ---
 // "Click to add a brick" on the section pages. There's no button as such:
-// the dashed outline of five bricks in the bottom-right corner is the thing
-// you click. Each click lays one brick; the fifth turns the course into a
-// marble column that rises up the page (fading out above the bottom quarter
-// of the screen), and the empty outline steps a little to the left to start
-// the next one. Progress is kept in this browser, across all section pages.
+// the dashed outline of five bricks is the thing you click. Each click lays
+// one brick; the fifth turns the course into a marble column that rises up
+// the page (fading out above the bottom quarter of the screen), and the
+// outline steps left to the next spot.
+//
+// Columns only stand in the empty margins either side of the text, never
+// behind it. They fill right to left: the right margin from the screen edge
+// inwards, then the left margin from beside the text out to the far edge.
+// When every spot is taken the colonnade fades and starts again from zero.
+// Progress is kept in this browser, across all section pages.
 const PER_COLUMN = 5;
 ---
 
@@ -17,6 +22,7 @@ const PER_COLUMN = 5;
 	data-per={PER_COLUMN}
 	aria-label="Lay a brick"
 	title="Click to add a brick"
+	hidden
 >
 	{Array.from({ length: PER_COLUMN }, () => <span class="slot" />)}
 </button>
@@ -24,8 +30,8 @@ const PER_COLUMN = 5;
 <script>
 	const course = document.querySelector<HTMLButtonElement>("[data-course]")!;
 	const colonnade = document.querySelector<HTMLElement>("[data-colonnade]")!;
+	const text = document.querySelector<HTMLElement>("[data-text-column]");
 	const PER = Number(course.dataset.per);
-	const MAX_SHOWN = 6;
 	const KEY = "bricks";
 	const slots = [...course.querySelectorAll<HTMLElement>(".slot")];
 
@@ -43,10 +49,34 @@ const PER_COLUMN = 5;
 	};
 
 	let count = read();
+	// Left edges (px) of each spot a column can stand in, in fill order.
+	let spots: number[] = [];
 
-	function column() {
+	function measure() {
+		const css = getComputedStyle(course);
+		const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+		const width = course.getBoundingClientRect().width || 3 * rem;
+		const gap = parseFloat(css.getPropertyValue("--col-gap")) * rem;
+		const edge = parseFloat(css.getPropertyValue("--edge")) * rem;
+		const clear = 0.75 * rem; // breathing room next to the text
+		const vw = document.documentElement.clientWidth;
+		const box = text?.getBoundingClientRect();
+		const pad = text ? parseFloat(getComputedStyle(text).paddingLeft) : 0;
+		const textLeft = box ? box.left + pad : vw / 2;
+		const textRight = box ? box.right - pad : vw / 2;
+		const pitch = width + gap;
+
+		spots = [];
+		// right margin: from the screen edge inwards
+		for (let x = vw - edge - width; x >= textRight + clear; x -= pitch) spots.push(x);
+		// left margin: from beside the text out to the screen edge
+		for (let x = textLeft - clear - width; x >= edge; x -= pitch) spots.push(x);
+	}
+
+	function column(x: number) {
 		const el = document.createElement("span");
 		el.className = "column";
+		el.style.left = `${x}px`;
 		el.innerHTML = '<span class="capital"></span><span class="shaft"></span><span class="base"></span>';
 		return el;
 	}
@@ -54,17 +84,29 @@ const PER_COLUMN = 5;
 	function render() {
 		const loose = count % PER;
 		const columns = Math.floor(count / PER);
+		const fits = spots.length > 0;
+		course.hidden = !fits;
+		colonnade.hidden = !fits;
+		if (!fits) return;
+
 		slots.forEach((s, i) => s.classList.toggle("laid", i < loose));
-		const shown = Math.min(columns, MAX_SHOWN);
-		while (colonnade.children.length < shown) colonnade.appendChild(column());
-		while (colonnade.children.length > shown) colonnade.lastElementChild!.remove();
-		course.style.setProperty("--columns", String(shown));
-		const next = PER - loose;
+		const shown = Math.min(columns, spots.length);
+		const existing = [...colonnade.children] as HTMLElement[];
+		existing.slice(shown).forEach((c) => c.remove());
+		for (let i = 0; i < shown; i++) {
+			if (existing[i]) existing[i].style.left = `${spots[i]}px`;
+			else colonnade.appendChild(column(spots[i]));
+		}
+		course.style.left = `${spots[Math.min(columns, spots.length - 1)]}px`;
+		const left = spots.length - columns;
 		course.setAttribute(
 			"aria-label",
-			`Lay a brick. ${columns} ${columns === 1 ? "column" : "columns"} built; ${next} more ${next === 1 ? "brick" : "bricks"} to the next.`,
+			`Lay a brick. ${columns} of ${spots.length} columns built; ${PER - loose} more ${PER - loose === 1 ? "brick" : "bricks"} to the next.`,
 		);
+		course.title = left > 0 ? "Click to add a brick" : "";
 	}
+
+	const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 	let busy = false;
 	course.addEventListener("click", async () => {
@@ -83,21 +125,44 @@ const PER_COLUMN = 5;
 		}
 
 		// Fifth brick: set it, turn the course to marble, raise the column,
-		// then let the empty outline step left.
+		// then let the empty outline step on to the next spot.
 		slots[PER - 1].classList.add("laid", "landing");
-		await new Promise((r) => setTimeout(r, 350));
+		await wait(350);
 		course.classList.add("marbling");
-		await new Promise((r) => setTimeout(r, 450));
-		const shownBefore = colonnade.children.length;
+		await wait(450);
+		const before = colonnade.children.length;
 		render();
-		const fresh = colonnade.children[shownBefore] as HTMLElement | undefined;
-		fresh?.classList.add("rising");
+		(colonnade.children[before] as HTMLElement | undefined)?.classList.add("rising");
 		course.classList.remove("marbling");
 		slots.forEach((s) => s.classList.remove("landing"));
+
+		// Every spot filled: admire it for a moment, then start again.
+		if (count / PER >= spots.length) {
+			course.classList.add("resting");
+			await wait(1800);
+			colonnade.classList.add("clearing");
+			await wait(900);
+			count = 0;
+			save(count);
+			colonnade.replaceChildren();
+			colonnade.classList.remove("clearing");
+			course.classList.remove("resting");
+			render();
+		}
 		busy = false;
 	});
 
-	render();
+	function layout() {
+		measure();
+		// A narrower window can leave more columns than spots: start over.
+		if (spots.length && Math.floor(count / PER) >= spots.length) {
+			count = count % PER;
+			save(count);
+		}
+		render();
+	}
+	window.addEventListener("resize", layout);
+	layout();
 </script>
 
 <style>
@@ -110,21 +175,30 @@ const PER_COLUMN = 5;
 		--col-w: 2.6rem;
 		--col-gap: 0.55rem;
 		--bottom: 1.25rem;
-		--right: clamp(0.75rem, 2.5vw, 2rem);
+		--edge: 1;
 	}
 
 	/* Columns sit behind the page content; the outline sits above it. */
 	.colonnade {
 		position: fixed;
-		right: var(--right);
-		bottom: var(--bottom);
+		inset: auto 0 var(--bottom) 0;
 		z-index: 1;
-		display: flex;
-		flex-direction: row-reverse;
-		gap: var(--col-gap);
+		height: 0;
 		pointer-events: none;
+		transition: opacity 0.9s ease;
+	}
+	.colonnade[hidden],
+	.course[hidden] {
+		display: none;
+	}
+	.colonnade:global(.clearing) {
+		opacity: 0;
 	}
 	.colonnade :global(.column) {
+		position: absolute;
+		bottom: 0;
+		/* centred in a spot as wide as the brick outline */
+		margin-left: calc(var(--col-w) * 0.075);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -182,7 +256,6 @@ const PER_COLUMN = 5;
 
 	.course {
 		position: fixed;
-		right: calc(var(--right) + var(--columns, 0) * (var(--col-w) + var(--col-gap)));
 		bottom: var(--bottom);
 		z-index: 40;
 		display: flex;
@@ -193,7 +266,13 @@ const PER_COLUMN = 5;
 		border: 0;
 		background: none;
 		cursor: pointer;
-		transition: right 0.6s cubic-bezier(0.3, 0.9, 0.3, 1);
+		transition:
+			left 0.6s cubic-bezier(0.3, 0.9, 0.3, 1),
+			opacity 0.4s;
+	}
+	.course.resting {
+		opacity: 0.3;
+		pointer-events: none;
 	}
 	.slot {
 		display: block;
@@ -233,11 +312,12 @@ const PER_COLUMN = 5;
 		margin-inline: 0;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 900px) {
 		.colonnade,
 		.course {
 			--col-w: 1.9rem;
 			--col-gap: 0.4rem;
+			--edge: 0.5;
 		}
 		.slot {
 			height: 0.55rem;

@@ -2,12 +2,10 @@
 @plugin "@tailwindcss/typography";
 
 @import "@fontsource/bree-serif/400.css";
-@import "@fontsource/jetbrains-mono/700.css";
 
 @theme {
-	/* One face for the whole site. Mono is only for the SPQR mark. */
+	/* One face for the whole site, the SPQR mark included. */
 	--font-main: "Bree Serif", Georgia, serif;
-	--font-mono: "JetBrains Mono", ui-monospace, monospace;
 
 	--color-bg: var(--bg);
 	--color-ink: var(--ink);

@@ -1,5 +1,11 @@
 // Everything a non-developer is likely to want to change lives in this file.
 
+// What SPQR stands for on this site.
+export const MOTTO = {
+	LATIN: "Scientia Per Quaestionem Reperitur",
+	ENGLISH: "knowledge is found through questioning",
+};
+
 export const SITE = {
 	NAME: "Manya",
 	INTRO: "Builds things, reads papers, and keeps a small city of bricks.",

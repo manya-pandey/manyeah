@@ -1,4 +1,5 @@
 ---
+import { getWhoami } from "@/lib/whoami";
 import Colonnade from "@/components/Colonnade.astro";
 import Doodle from "@/components/Doodle.astro";
 import DoodleNav from "@/components/DoodleNav.astro";
@@ -17,12 +18,13 @@ interface Props {
 const { section, title, description } = Astro.props;
 const route = ROUTES.find((r) => r.NAME === section);
 const blurb = Astro.props.blurb ?? (title ? undefined : route?.BLURB);
+const me = await getWhoami();
 ---
 
 <Base title={title ?? section} description={description ?? blurb ?? route?.BLURB}>
 	<div class="page" data-text-column>
 		<header class="head">
-			<a href="/" class="home">{SITE.NAME}</a>
+			<a href="/" class="home">{me.name}</a>
 		</header>
 		<DoodleNav current={section} compact />
 

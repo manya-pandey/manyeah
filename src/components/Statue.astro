@@ -159,8 +159,9 @@ import { STATUE } from "@/consts";
 			return max > 0 ? window.scrollY / max : 0;
 		};
 
-		// As the About section scrolls in, the bust glides from beside the name
-		// to the middle of the screen (eased, so it settles rather than stops).
+		// As the whoami section scrolls in, the bust glides from beside the name
+		// to the middle of the screen (eased, so it settles rather than stops)
+		// and fades to about a third of its strength.
 		const about = document.getElementById("whoami");
 		let centred = 0;
 		const centreTarget = () => {
@@ -180,6 +181,8 @@ import { STATUE } from "@/consts";
 			centred += (centreTarget() - centred) * (reduceMotion ? 1 : 0.08);
 			const restX = anchor.x * (1 - centred);
 			const restY = anchor.y * (1 - centred);
+			// ...and fades back so the whoami text in front of it reads clearly.
+			renderer.domElement.style.opacity = String(1 - 0.65 * centred);
 			pivot.position.x = restX;
 			if (reduceMotion) {
 				pivot.position.y = restY;

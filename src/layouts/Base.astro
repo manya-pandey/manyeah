@@ -1,4 +1,5 @@
 ---
+import { getWhoami } from "@/lib/whoami";
 import { SITE, THEMES } from "@/consts";
 import ContactCard from "@/components/ContactCard.astro";
 import "@/styles/global.css";
@@ -8,8 +9,9 @@ interface Props {
 	description?: string;
 }
 
+const me = await getWhoami();
 const { title, description = SITE.DESCRIPTION } = Astro.props;
-const fullTitle = title ? `${title} · ${SITE.NAME}` : SITE.NAME;
+const fullTitle = title ? `${title} · ${me.name}` : me.name;
 const themeIds = { light: THEMES.LIGHT.ID, dark: THEMES.DARK.ID };
 const presetIds = Object.values(THEMES).map((t) => t.ID);
 ---

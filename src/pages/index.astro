@@ -4,7 +4,10 @@ import DoodleNav from "@/components/DoodleNav.astro";
 import Loader from "@/components/Loader.astro";
 import Statue from "@/components/Statue.astro";
 import { SITE, STATUE } from "@/consts";
+import { getWhoami } from "@/lib/whoami";
 import Base from "@/layouts/Base.astro";
+
+const me = await getWhoami();
 ---
 
 <Base>
@@ -34,9 +37,8 @@ import Base from "@/layouts/Base.astro";
 	<main>
 		<div class="landing">
 			<div class="hero">
-				<h1 class="name">{SITE.NAME}</h1>
-				<p class="intro">{SITE.INTRO}</p>
-				{SITE.TAGLINE && <p class="tagline">{SITE.TAGLINE}</p>}
+				<h1 class="name">{me.name}</h1>
+				<p class="intro">{me.intro}</p>
 				<a class="resume" href={SITE.RESUME}>
 					résumé
 					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18.5 5.5M9 5h10v10" /></svg>

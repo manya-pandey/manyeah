@@ -1,5 +1,5 @@
 import { defineCollection } from "astro:content";
-import { file, glob } from "astro/loaders";
+import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
 // One folder (or file) per section under src/content. Add a .md file to add an entry.
@@ -53,10 +53,29 @@ const blogs = defineCollection({
 });
 
 const quotes = defineCollection({
-	loader: file("./src/content/quotes.json"),
+	loader: glob({ base: "./src/content/quotes", pattern: "**/*.md" }),
 	schema: z.object({
 		text: z.string(),
 		by: z.string(),
+		// Newest first on the blogs page.
+		date: z.coerce.date(),
+	}),
+});
+
+// The whoami section (and the name and intro on the landing page): one file.
+const whoami = defineCollection({
+	loader: glob({ base: "./src/content", pattern: "whoami.md" }),
+	schema: z.object({
+		name: z.string(),
+		intro: z.string(),
+		photo: z.string(),
+		photo_alt: z.string().default("Portrait"),
+		email: z.email(),
+		github: z.url().optional(),
+		linkedin: z.url().optional(),
+		// The résumé page's preview image (public/resume.webp) is regenerated
+		// from this PDF by .github/workflows/resume-preview.yml.
+		resume: z.string(),
 	}),
 });
 
@@ -73,4 +92,4 @@ const snippets = defineCollection({
 	}),
 });
 
-export const collections = { work, research, people, blogs, quotes, snippets };
+export const collections = { work, research, people, blogs, quotes, snippets, whoami };

@@ -1,0 +1,40 @@
+# Redraws public/resume.webp (the image on the résumé page) from the résumé
+# PDF named in src/content/whoami.md, whenever either changes.
+name: Résumé preview
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/content/whoami.md"
+      - "public/**/*.pdf"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install poppler and ImageMagick
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils imagemagick
+
+      - name: Render the first page
+        run: |
+          pdf="public$(sed -n 's/^resume:[[:space:]]*//p' src/content/whoami.md | tr -d '"'"'"' \r')"
+          echo "Rendering $pdf"
+          test -f "$pdf"
+          pdftoppm -r 200 -png -singlefile "$pdf" /tmp/resume
+          convert /tmp/resume.png -quality 82 public/resume.webp
+
+      - name: Commit if it changed
+        run: |
+          git add public/resume.webp
+          if git diff --cached --quiet; then echo "Preview already up to date."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update the résumé preview image"
+          git push

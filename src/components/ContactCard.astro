@@ -1,10 +1,11 @@
 ---
-import { ABOUT } from "@/consts";
+import { getWhoami } from "@/lib/whoami";
 
 // The contact card, opened by anything with [data-contact-open]. It shows
 // the email as text with a copy button rather than relying on mailto:,
 // which does nothing for people without a mail app set up.
-const links = ABOUT.SOCIALS.filter((s) => !s.HREF.startsWith("mailto:"));
+const me = await getWhoami();
+const links = me.socials.filter((s) => s.name !== "gmail");
 const pretty = (href: string) => href.replace(/^https?:\/\/(www\.)?/, "");
 ---
 
@@ -16,19 +17,19 @@ const pretty = (href: string) => href.replace(/^https?:\/\/(www\.)?/, "");
 
 	<p class="label">email</p>
 	<div class="email-row">
-		<span class="email" data-email>{ABOUT.EMAIL}</span>
+		<span class="email" data-email>{me.email}</span>
 		<button type="button" class="copy" data-copy>copy</button>
 	</div>
-	<a class="write" href={`mailto:${ABOUT.EMAIL}`}>open in your mail app ↗</a>
+	<a class="write" href={`mailto:${me.email}`}>open in your mail app ↗</a>
 
 	<p class="label">elsewhere</p>
 	<ul>
 		{
 			links.map((l) => (
 				<li>
-					<span>{l.NAME}</span>
-					<a href={l.HREF} target="_blank" rel="noopener">
-						{pretty(l.HREF)} ↗
+					<span>{l.name}</span>
+					<a href={l.href} target="_blank" rel="noopener">
+						{pretty(l.href)} ↗
 					</a>
 				</li>
 			))

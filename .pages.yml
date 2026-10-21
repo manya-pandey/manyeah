@@ -1,0 +1,137 @@
+# Pages CMS (https://pagescms.org): forms for adding and editing the site's
+# content. Every save is a commit to main, which Vercel turns into a new
+# deploy. Field names match the schemas in src/content.config.ts.
+
+media:
+  input: public/media
+  output: /media
+
+content:
+  - name: whoami
+    label: whoami
+    type: file
+    path: src/content/whoami.md
+    fields:
+      - { name: name, label: Name (shown large on the landing page), type: string, required: true }
+      - { name: intro, label: Intro line under the name, type: string, required: true }
+      - { name: photo, label: Photo (square works best), type: image, required: true }
+      - { name: photo_alt, label: Photo description (for screen readers), type: string }
+      - { name: email, label: Email, type: string, required: true }
+      - { name: github, label: GitHub URL, type: string }
+      - { name: linkedin, label: LinkedIn URL, type: string }
+      - { name: resume, label: "Résumé PDF (the page preview updates itself a minute after saving)", type: file, required: true }
+      - { name: body, label: whoami text, type: rich-text }
+
+  - name: work
+    label: Work
+    description: Internships, roles, projects and certifications. Newest first within each group.
+    type: collection
+    path: src/content/work
+    filename: "{primary}.md"
+    view:
+      fields: [title, kind, period]
+      primary: title
+      default: { sort: date, order: desc }
+    fields:
+      - { name: title, label: Title (company, project or certificate), type: string, required: true }
+      - name: kind
+        label: Group
+        type: select
+        required: true
+        options: { values: [internship, leadership, project, certification] }
+      - { name: role, label: Role, type: string }
+      - { name: org, label: Organisation (if not in the title), type: string }
+      - { name: location, label: Location, type: string }
+      - { name: period, label: "Dates as shown (e.g. May – Jul 2026)", type: string }
+      - { name: date, label: Start date (used for ordering), type: date, required: true }
+      - { name: link, label: Link, type: string }
+      - { name: tags, label: Tags (shown on projects), type: string, list: true }
+      - { name: body, label: Description, type: rich-text }
+
+  - name: research
+    label: Research
+    type: collection
+    path: src/content/research
+    filename: "{primary}.md"
+    view:
+      fields: [title, status, date]
+      primary: title
+      default: { sort: date, order: desc }
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - name: status
+        label: Status
+        type: select
+        required: true
+        options: { values: [published, accepted, preprint, under review, in progress] }
+      - { name: authors, label: Authors, type: string }
+      - { name: venue, label: Venue, type: string }
+      - { name: date, label: Date, type: date, required: true }
+      - { name: link, label: Link (arXiv, etc.), type: string }
+      - { name: body, label: Summary, type: rich-text }
+
+  - name: snippets
+    label: Snippets
+    description: Events, awards and rooms I've been in. Newest date shows first.
+    type: collection
+    path: src/content/snippets
+    filename: "{year}-{month}-{day}-{primary}.md"
+    view:
+      fields: [title, when]
+      primary: title
+      default: { sort: date, order: desc }
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - { name: date, label: Date (sets the order; newest on top), type: date, required: true }
+      - { name: when, label: "Date as shown (optional, e.g. 2026–27)", type: string }
+      - { name: where, label: Where, type: string }
+      - { name: role, label: Badge (e.g. speaker, rank 19), type: string }
+      - { name: link, label: Link, type: string }
+      - { name: body, label: Text, type: rich-text }
+
+  - name: blogs
+    label: Blog posts
+    type: collection
+    path: src/content/blogs
+    filename: "{year}-{month}-{day}-{primary}.md"
+    view:
+      fields: [title, date, draft]
+      primary: title
+      default: { sort: date, order: desc }
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - { name: description, label: One-line summary, type: string }
+      - { name: date, label: Date, type: date, required: true }
+      - { name: draft, label: Draft (hidden from the site), type: boolean, default: false }
+      - { name: body, label: Post, type: rich-text }
+
+  - name: quotes
+    label: Quotes
+    description: Shown under the posts on the blogs page, newest first.
+    type: collection
+    path: src/content/quotes
+    filename: "{year}-{month}-{day}-{hour}{minute}{second}.md"
+    view:
+      fields: [text, by]
+      primary: text
+      default: { sort: date, order: desc }
+    fields:
+      - { name: text, label: Quote, type: text, required: true }
+      - { name: by, label: Who said it, type: string, required: true }
+      - { name: date, label: Date added, type: date, required: true }
+
+  - name: people
+    label: People
+    type: collection
+    path: src/content/people
+    filename: "{primary}.md"
+    view:
+      fields: [name, who]
+      primary: name
+      default: { sort: order, order: asc }
+    fields:
+      - { name: name, label: Name, type: string, required: true }
+      - { name: who, label: Who they are to me, type: string, required: true }
+      - { name: link, label: Their site, type: string }
+      - { name: order, label: Order (lower shows first), type: number, default: 0 }
+      - { name: body, label: Why they matter, type: rich-text }

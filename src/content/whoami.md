@@ -2,13 +2,11 @@
 name: Manya
 intro: I make models work. Sometimes on purpose.
 photo: /media/whoami.jpg
-photo_alt: Manya speaking into a microphone at an event
 email: manyapandey7842@gmail.com
 github: https://github.com/manya-pandey
 linkedin: https://www.linkedin.com/in/manya-pandey
 resume: /media/resume.pdf
 ---
-
 Hi, I'm Manya. I build AI systems, I study why they break, and I say "it depends on the data" more often than is socially acceptable.
 
 At Birla AI Labs, my research is on making time-series foundation models sturdier at inference time. It became a paper at two ICML 2026 workshops and had a surprise at every step. At BNY, I built retrieval and LLM systems where the acceptable number of surprises was zero. My code shipped to production there, as an intern, and no, I did not make that up. These days I'm tackling tabular foundation models.

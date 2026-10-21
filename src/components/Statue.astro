@@ -19,6 +19,43 @@ import { STATUE } from "@/consts";
 	const cssColor = (name: string) => new THREE.Color(cssVar(name) || "#ffffff");
 	const cssNumber = (name: string, fallback: number) => Number(cssVar(name)) || fallback;
 
+	// Some hosts' content policies forbid compiling WebAssembly; Draco then
+	// falls back to its (slower, larger) plain-JavaScript decoder.
+	async function wasmAllowed() {
+		try {
+			await WebAssembly.compile(new Uint8Array([0, 0x61, 0x73, 0x6d, 1, 0, 0, 0]));
+			return true;
+		} catch {
+			return false;
+		}
+	}
+
+	// Fetch the bytes ourselves and parse them, rather than handing the URL
+	// to GLTFLoader. A .json source is a { "glb": "<base64>" } wrapper, for
+	// hosts that won't serve .glb files.
+	async function loadStatue(src: string, dracoPath: string) {
+		const res = await fetch(src);
+		if (!res.ok) throw new Error(`${src}: HTTP ${res.status}`);
+		let bytes: ArrayBuffer;
+		if (src.endsWith(".json")) {
+			const { glb } = (await res.json()) as { glb: string };
+			bytes = Uint8Array.from(atob(glb), (c) => c.charCodeAt(0)).buffer;
+		} else {
+			bytes = await res.arrayBuffer();
+		}
+		const draco = new DRACOLoader().setDecoderPath(dracoPath);
+		// setDecoderConfig() is deprecated (and untyped here); the property it
+		// set is what the loader reads.
+		if (!(await wasmAllowed())) {
+			(draco as unknown as { decoderConfig: { type?: string } }).decoderConfig.type = "js";
+		}
+		try {
+			return await new GLTFLoader().setDRACOLoader(draco).parseAsync(bytes, "");
+		} finally {
+			draco.dispose();
+		}
+	}
+
 	function start() {
 		let renderer: THREE.WebGLRenderer;
 		try {
@@ -59,11 +96,8 @@ import { STATUE } from "@/consts";
 		const pivot = new THREE.Group();
 		scene.add(pivot);
 
-		const draco = new DRACOLoader().setDecoderPath(container.dataset.draco!);
-		const loader = new GLTFLoader().setDRACOLoader(draco);
-		loader.load(
-			container.dataset.src!,
-			(gltf) => {
+		loadStatue(container.dataset.src!, container.dataset.draco!)
+			.then((gltf) => {
 				const model = gltf.scene;
 				const marble = new THREE.MeshStandardMaterial({
 					color: 0xf3efe7,
@@ -85,12 +119,9 @@ import { STATUE } from "@/consts";
 				pivot.rotation.y = baseY;
 
 				container.classList.add("statue--in");
-				draco.dispose();
-				ready();
-			},
-			undefined,
-			() => ready(),
-		);
+			})
+			.catch((error) => console.warn("Statue failed to load:", error))
+			.finally(ready);
 
 		// Light follows the pointer; the bust leans a touch toward it.
 		const target = { x: 0, y: 0 };

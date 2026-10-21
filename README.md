@@ -54,14 +54,14 @@ The whole site, the SPQR mark included, is set in Bree Serif (`--font-main` in `
 
 ## SPQR
 
-On this site SPQR stands for *Scientia Per Quaestionem Reperitur*, "knowledge is found through questioning" (`MOTTO` in `src/consts.ts`). The loading screen draws the mark (SPQR between the nav's hand-drawn brackets) in the current theme, types the motto out beneath it, then fades in the translation. The tab icon is the same mark (`design/favicon*.svg`, rendered to the PNGs in `public/`).
+On this site SPQR stands for *Scientia Per Quaestionem Reperitur*, "knowledge is found through questioning" (`MOTTO` in `src/consts.ts`). The mark is { SPQR } with the curly braces drawn as laurel sprigs, with circuit traces and node dots branching off among the leaves (geometry in `src/lib/spqr.ts`). The loading screen, in the current theme, grows the laurels, lights the circuit, glitches the letters on, types the Latin motto, then brings in the English translation, which holds for a couple of seconds while the Latin dims. The tab icon uses the same laurels: `node --experimental-strip-types scripts/favicon.ts` writes `design/favicon*.svg`, which are rendered to the PNGs in `public/`.
 
 ## The landing page
 
 - The nav stays pinned to the top as you scroll. **whoami** (first in the nav) scrolls to the About section; **menu** (the three bars, last) opens the menu.
 - **scroll** and **contact** boxes sit at the bottom of the first screen. Contact (here and in the menu) opens a card with the email, a copy button, and the GitHub and LinkedIn links.
 - Below the first screen is the About section: a flip-card photo (pixel art on the front, the photo on hover) whose corners round off as it scrolls in, a row of contact icons, and a few paragraphs. The photos in `public/about/` are placeholders rendered from the statue.
-- At the very bottom, a strip slides out of the pinned nav with an arrow up at **work**.
+- At the very bottom, a boxed note slides out of the pinned nav with an arrow up at **work**. It lives inside the bar, so it never covers the text.
 - The statue turns a full roll as the page scrolls.
 
 ## Bricks on the section pages

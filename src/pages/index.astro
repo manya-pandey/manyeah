@@ -16,9 +16,9 @@ import Base from "@/layouts/Base.astro";
 			<DoodleNav />
 		</div>
 		<!--
-			Once the visitor reaches the end, a strip slides out of the pinned
-			bar with an arrow up at "work". It's part of the bar, so it never
-			lies on top of the page text.
+			Once the visitor reaches the end, a box slides out of the pinned bar
+			with an arrow up at "work". It belongs to the bar (the bar grows to
+			make room for it), so it never lies on top of the page text.
 		-->
 		<div class="end-hint" data-end-hint aria-live="polite">
 			<div class="hint-inner">
@@ -80,7 +80,7 @@ import Base from "@/layouts/Base.astro";
 	const top = document.querySelector<HTMLElement>("[data-top]")!;
 	const hint = document.querySelector<HTMLElement>("[data-end-hint]")!;
 	const work = document.querySelector<HTMLElement>('[data-route="work"]')!;
-	// Line the arrow's tip (10px into the strip) up under the middle of "work".
+	// Line the arrow's tip (10px into the hint) up under the middle of "work".
 	function placeHint() {
 		const r = work.getBoundingClientRect();
 		const strip = hint.getBoundingClientRect();
@@ -92,7 +92,7 @@ import Base from "@/layouts/Base.astro";
 		const shown = hint.classList.contains("is-shown");
 		// Opening the strip makes the page a little taller; the wider margin for
 		// closing stops it flickering open and shut at the boundary.
-		const atEnd = window.scrollY > 40 && fromEnd <= (shown ? 160 : 60);
+		const atEnd = window.scrollY > 40 && fromEnd <= (shown ? 220 : 60);
 		if (atEnd && !shown) {
 			placeHint();
 			// and again once the pinned nav has finished shrinking
@@ -300,7 +300,7 @@ import Base from "@/layouts/Base.astro";
 		}
 	}
 
-	/* The end-of-page strip under the pinned bar, arrow up at "work". */
+	/* The end-of-page hint under the pinned bar, arrow up at "work". */
 	.end-hint {
 		display: grid;
 		grid-template-rows: 0fr;
@@ -314,23 +314,28 @@ import Base from "@/layouts/Base.astro";
 	}
 	.hint-inner {
 		display: flex;
-		align-items: flex-end;
-		gap: 0.35rem;
+		align-items: flex-start;
+		gap: 0.3rem;
 		min-height: 0;
 		overflow: hidden;
 		padding-left: var(--hint-x, 0);
+		/* room for the box's offset shadow */
+		padding-bottom: 0.6rem;
 		opacity: 0;
-		transition: opacity 0.3s ease;
+		transform: translateY(-6px);
+		transition:
+			opacity 0.3s ease,
+			transform 0.3s ease;
 	}
 	.end-hint.is-shown .hint-inner {
 		opacity: 1;
+		transform: none;
 		transition-delay: 0.12s;
 	}
 	.end-hint svg {
 		flex: none;
-		width: 1.6rem;
-		height: 1.9rem;
-		margin-top: 0.15rem;
+		width: 1.9rem;
+		height: 2.3rem;
 		fill: none;
 		stroke: currentColor;
 		stroke-width: 2.4;
@@ -338,9 +343,16 @@ import Base from "@/layouts/Base.astro";
 		stroke-linejoin: round;
 	}
 	.end-hint p {
-		padding-bottom: 0.15rem;
-		font-size: 1rem;
+		margin-top: 0.9rem;
+		max-width: 16rem;
+		padding: 0.45rem 0.8rem 0.5rem;
+		border: 1.5px solid currentColor;
+		border-radius: 4px 9px 5px 8px / 9px 4px 8px 5px;
+		background: var(--bg);
+		box-shadow: 3px 3px 0 var(--line);
+		font-size: 1.05rem;
 		line-height: 1.2;
+		text-wrap: balance;
 	}
 
 	@media (max-width: 720px) {

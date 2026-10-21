@@ -1,9 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-  <!-- At 16px the brackets turn to mush, so it's the stacked letters alone. -->
   <rect width="16" height="16" rx="3" fill="#f2eadb"/>
   <g fill="#2a211b" font-family="Bree Serif" font-size="7.6" text-anchor="middle">
     <text x="8" y="7.3">SP</text>
     <text x="8" y="14.6">QR</text>
   </g>
-  <path d="M1.6 2.2v11.6M14.4 2.2v11.6" stroke="#b4532a" stroke-width="1.1" stroke-linecap="round"/>
+  <path d="M2.4 1.8C1 4 1 12 2.4 14.2M13.6 1.8C15 4 15 12 13.6 14.2" fill="none" stroke="#b4532a" stroke-width="1.1" stroke-linecap="round"/>
 </svg>

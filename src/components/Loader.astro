@@ -8,7 +8,8 @@ const chars = [...MOTTO.LATIN];
 <!--
 	Loading screen. Shown once per browser session on the landing page, in
 	the current theme. The SPQR mark draws itself, the motto types out
-	beneath it, then the translation fades in. It lifts when the statue has
+	beneath it, then the English translation takes over (the Latin dims)
+	and holds for a couple of seconds before the screen lifts. It lifts when the statue has
 	loaded and the motto has finished (or after a timeout, so it never traps
 	anyone behind a slow connection).
 -->
@@ -38,8 +39,8 @@ const chars = [...MOTTO.LATIN];
 			return;
 		}
 		const shownAt = performance.now();
-		const MIN_MS = 3600;
-		const MAX_MS = 6500;
+		const MIN_MS = 5200;
+		const MAX_MS = 7000;
 		let done = false;
 		const lift = () => {
 			if (done) return;
@@ -88,11 +89,13 @@ const chars = [...MOTTO.LATIN];
 	.motto {
 		font-size: clamp(1.05rem, 3.2vw, 1.5rem);
 		letter-spacing: 0.02em;
+		/* once the translation arrives, the Latin steps back */
+		animation: recede 0.6s ease forwards 2.5s;
 	}
 	.motto span {
 		opacity: 0;
 		animation: type 0.01s linear forwards;
-		animation-delay: calc(1.25s + var(--i) * 45ms);
+		animation-delay: calc(1.25s + var(--i) * 28ms);
 	}
 	.motto .caret {
 		color: var(--accent);
@@ -100,17 +103,23 @@ const chars = [...MOTTO.LATIN];
 		animation:
 			type 0.01s linear forwards,
 			blink 0.9s steps(1) infinite;
-		animation-delay: calc(1.25s + var(--i) * 45ms), calc(1.25s + var(--i) * 45ms);
+		animation-delay: calc(1.25s + var(--i) * 28ms), calc(1.25s + var(--i) * 28ms);
 	}
 	.translation {
-		color: var(--muted);
-		font-size: clamp(0.85rem, 2.4vw, 1rem);
+		color: var(--accent);
+		font-size: clamp(1.1rem, 3.4vw, 1.6rem);
 		opacity: 0;
-		animation: fade 0.6s ease forwards 3s;
+		animation: fade 0.6s ease forwards 2.4s;
 	}
 	@keyframes type {
 		to {
 			opacity: 1;
+		}
+	}
+	@keyframes recede {
+		to {
+			opacity: 0.45;
+			transform: scale(0.88);
 		}
 	}
 	@keyframes blink {

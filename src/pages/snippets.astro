@@ -19,8 +19,33 @@ const items = (await getCollection("snippets")).sort((a, b) => +b.data.date - +a
 					meta={[item.data.when ?? fullDate(item.data.date), item.data.where]}
 				>
 					<Content />
+					{item.data.image && (
+						<figure class="photo">
+							<img src={item.data.image} alt={item.data.image_alt ?? ""} loading="lazy" />
+							{item.data.caption && <figcaption>{item.data.caption}</figcaption>}
+						</figure>
+					)}
 				</Entry>
 			);
 		})
 	}
 </Section>
+
+<style>
+	.photo {
+		margin: 1.1rem 0 0.3rem;
+	}
+	.photo img {
+		display: block;
+		width: 100%;
+		height: auto;
+		border: 1.5px solid var(--ink);
+		border-radius: 4px 9px 5px 8px / 9px 4px 8px 5px;
+		box-shadow: 5px 5px 0 var(--line);
+	}
+	.photo figcaption {
+		margin-top: 0.55rem;
+		color: var(--muted);
+		font-size: 0.9rem;
+	}
+</style>

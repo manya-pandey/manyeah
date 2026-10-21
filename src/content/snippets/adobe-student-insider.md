@@ -4,6 +4,9 @@ date: 2026-09-01
 when: 2026–27
 where: Noida
 role: insider
+image: /media/adobe-student-insider.webp
+image_alt: Rows of students in Adobe India Student Summit lanyards listening to a session at Adobe's Noida campus
+caption: The opening day at Adobe's Noida campus.
 ---
 
 A year-long programme where Adobe picked about 100 students out of roughly 19,000, which is a 0.5% chance. I would love to say I planned for those odds.

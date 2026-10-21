@@ -1,6 +1,6 @@
 ---
 name: Manya
-intro: Builds things, reads papers, and keeps a small city of bricks.
+intro: I make models work. Sometimes on purpose.
 photo: /media/whoami.jpg
 photo_alt: Manya speaking into a microphone at an event
 email: manyapandey7842@gmail.com

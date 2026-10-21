@@ -89,6 +89,10 @@ const snippets = defineCollection({
 		where: z.string().optional(),
 		role: z.string().optional(),
 		link: z.url().optional(),
+		// An optional photo (under public/media) shown with the snippet.
+		image: z.string().optional(),
+		image_alt: z.string().optional(),
+		caption: z.string().optional(),
 	}),
 });
 

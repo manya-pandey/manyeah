@@ -34,6 +34,21 @@ const presetIds = Object.values(THEMES).map((t) => t.ID);
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
 		<!--
+			Every page opens at the top. Browsers normally put you back where you
+			were (on reload, or when a closed tab is restored); this turns that off.
+			Links to a section, like /#whoami, still jump to it.
+		-->
+		<script is:inline>
+			if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+			const toTop = () => {
+				if (!location.hash) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+			};
+			toTop();
+			window.addEventListener("load", toTop, { once: true });
+			// pages brought back from the back/forward cache too
+			window.addEventListener("pageshow", (e) => e.persisted && toTop());
+		</script>
+		<!--
 			Theme engine. Runs before first paint so a saved theme never flashes.
 			A choice is "auto" (cream or midnight, following the system), a preset
 			id, or a custom { a, b } pair of hex colours. The theme

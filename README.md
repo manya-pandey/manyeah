@@ -64,7 +64,8 @@ On this site SPQR stands for *Scientia Per Quaestionem Reperitur*, "knowledge is
 - **scroll** and **contact** boxes sit at the bottom of the first screen. Contact (here and in the menu) opens a card with the email, a copy button, and the GitHub and LinkedIn links.
 - Below the first screen is the whoami section: a flip-card photo (a pixel-art version drawn from the photo on the front, the photo itself on hover) whose corners round off as it scrolls in, a row of contact icons, and the whoami text.
 - At the very bottom, a boxed note slides out of the pinned nav with an arrow up at **work**. It lives inside the bar, so it never covers the text.
-- The statue turns a full roll as the page scrolls, glides to the middle of the screen as whoami scrolls in, and fades back behind its text.
+- As the page scrolls the statue looks one way, then the other, and nods a little (never far enough to show the scan's flat back or turn upside down), then glides to the middle of the screen as whoami scrolls in and fades back behind its text.
+- Every page opens at the top, even after a reload or a restored tab; links like `/#whoami` still jump to their section.
 
 ## Bricks on the section pages
 

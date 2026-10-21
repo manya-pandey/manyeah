@@ -149,26 +149,6 @@ const { current, compact = false } = Astro.props;
 		height: 2.9rem;
 		transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
 	}
-	.label {
-		position: relative;
-	}
-	/* Scribbled underline on hover / current page */
-	.label::after {
-		content: "";
-		position: absolute;
-		left: -4%;
-		right: -4%;
-		bottom: -0.15rem;
-		height: 0.45rem;
-		--scribble: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'><path d='M2 5c20-3 40-3.5 60-2.2 12 .8 24 .4 36-.8' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'/></svg>");
-		-webkit-mask: var(--scribble) no-repeat center / 100% 100%;
-		mask: var(--scribble) no-repeat center / 100% 100%;
-		background: var(--accent);
-		opacity: 0.8;
-		transform: scaleX(0);
-		transform-origin: left;
-		transition: transform 0.3s ease;
-	}
 	a:hover,
 	a:focus-visible,
 	a[aria-current="page"],
@@ -177,12 +157,9 @@ const { current, compact = false } = Astro.props;
 	button[aria-expanded="true"] {
 		color: var(--accent);
 	}
-	a:hover .label::after,
-	a:focus-visible .label::after,
-	a[aria-current="page"] .label::after,
-	button:hover .label::after,
-	button[aria-expanded="true"] .label::after {
-		transform: scaleX(1);
+	/* the current page's doodle sits slightly raised, in the accent colour */
+	a[aria-current="page"] :global(.icon) {
+		transform: translateY(-2px);
 	}
 	a:hover :global(.icon) {
 		transform: rotate(-8deg) scale(1.08);

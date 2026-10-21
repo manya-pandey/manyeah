@@ -152,7 +152,13 @@ import { STATUE } from "@/consts";
 			if (visible) requestAnimationFrame(tick);
 		});
 
-		// Scrolling rolls the bust a full turn on two axes, as on LHRUN/one-space.
+		// Scrolling turns the bust, after LHRUN/one-space, but within limits:
+		// it looks one way, then the other, then settles facing front by the
+		// end of the page. The turn stays within ~35° of its resting angle so
+		// the scan's flat back stays hidden, and the head only nods (~20°),
+		// never flips.
+		const MAX_TURN = 0.6;
+		const MAX_TILT = 0.35;
 		let roll = 0;
 		const scrollFraction = () => {
 			const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -187,10 +193,12 @@ import { STATUE } from "@/consts";
 			if (reduceMotion) {
 				pivot.position.y = restY;
 			} else {
-				roll += (scrollFraction() * Math.PI * 2 - roll) * 0.08;
+				roll += (scrollFraction() - roll) * 0.08;
+				const turn = Math.sin(roll * Math.PI * 2) * MAX_TURN;
+				const tilt = Math.sin(roll * Math.PI) * MAX_TILT;
 				pivot.position.y = restY + Math.sin(t * 0.6) * 0.12;
-				pivot.rotation.y = baseY + roll + Math.sin(t * 0.25) * 0.12 + target.x * 0.12;
-				pivot.rotation.x = roll + Math.sin(t * 0.4) * 0.03 - target.y * 0.05;
+				pivot.rotation.y = baseY + turn + Math.sin(t * 0.25) * 0.12 + target.x * 0.12;
+				pivot.rotation.x = tilt + Math.sin(t * 0.4) * 0.03 - target.y * 0.05;
 			}
 			renderer.render(scene, camera);
 			requestAnimationFrame(tick);

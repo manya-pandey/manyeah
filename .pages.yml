@@ -87,6 +87,9 @@ content:
       - { name: where, label: Where, type: string }
       - { name: role, label: Badge (e.g. speaker, rank 19), type: string }
       - { name: link, label: Link, type: string }
+      - { name: image, label: Photo (optional), type: image }
+      - { name: image_alt, label: Photo description (for screen readers), type: string }
+      - { name: caption, label: Photo caption (optional), type: string }
       - { name: body, label: Text, type: rich-text }
 
   - name: blogs

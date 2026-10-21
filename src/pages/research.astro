@@ -1,0 +1,25 @@
+---
+import Entry from "@/components/Entry.astro";
+import Section from "@/layouts/Section.astro";
+import { getCollection, render } from "astro:content";
+
+const items = (await getCollection("research")).sort((a, b) => +b.data.date - +a.data.date);
+---
+
+<Section section="research">
+	{
+		items.map(async (item) => {
+			const { Content } = await render(item);
+			return (
+				<Entry
+					title={item.data.title}
+					href={item.data.link}
+					tag={item.data.status}
+					meta={[item.data.authors, item.data.venue]}
+				>
+					<Content />
+				</Entry>
+			);
+		})
+	}
+</Section>

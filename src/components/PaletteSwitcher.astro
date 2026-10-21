@@ -1,0 +1,73 @@
+---
+import { PALETTES } from "@/consts";
+
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+<div class:list={["palettes", className]} role="radiogroup" aria-label="Colour palette">
+	{
+		PALETTES.map((p) => (
+			<button
+				type="button"
+				role="radio"
+				class="swatch"
+				data-palette-id={p.ID}
+				aria-label={p.NAME}
+				title={p.NAME}
+				style={`--sa: ${p.A}; --sb: ${p.B};`}
+			/>
+		))
+	}
+</div>
+
+<script>
+	function sync() {
+		const current = document.documentElement.dataset.palette;
+		document.querySelectorAll<HTMLButtonElement>("[data-palette-id]").forEach((b) => {
+			b.setAttribute("aria-checked", String(b.dataset.paletteId === current));
+		});
+	}
+	document.querySelectorAll<HTMLButtonElement>("[data-palette-id]").forEach((button) => {
+		button.addEventListener("click", () => {
+			const id = button.dataset.paletteId!;
+			document.documentElement.dataset.palette = id;
+			try {
+				localStorage.setItem("palette", id);
+			} catch {}
+			sync();
+		});
+	});
+	sync();
+</script>
+
+<style>
+	.palettes {
+		display: flex;
+		gap: 0.7rem;
+		padding: 0.6rem 0.45rem;
+	}
+	.swatch {
+		width: 1.9rem;
+		height: 1.9rem;
+		border-radius: 999px;
+		border: 1.5px solid var(--ink);
+		/* Split half and half between the palette's two primaries. */
+		background: linear-gradient(135deg, var(--sa) 0 50%, var(--sb) 50% 100%);
+		cursor: pointer;
+		transition:
+			transform 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+	.swatch:hover {
+		transform: scale(1.12) rotate(-12deg);
+	}
+	.swatch[aria-checked="true"] {
+		box-shadow:
+			0 0 0 3px var(--bg),
+			0 0 0 4.5px var(--accent);
+	}
+</style>

@@ -1,0 +1,190 @@
+---
+// Techno SPQR, variant A: { SPQR } in terminal green with a blue glitch
+// offset, framed by circuit traces with node dots. The braces are set a
+// little larger than the letters, per the sketch.
+interface Props {
+	class?: string;
+	animated?: boolean;
+}
+
+const { class: className = "", animated = false } = Astro.props;
+---
+
+<svg
+	class:list={["spqr", { "spqr--animated": animated }, className]}
+	viewBox="0 0 240 84"
+	role="img"
+	aria-label="SPQR"
+>
+	<g class="traces" fill="none" stroke-width="1.4" stroke-linecap="round">
+		<path class="trace blue" d="M14 42 H66" pathLength="1"></path>
+		<path class="trace green" d="M174 42 H226" pathLength="1"></path>
+		<path class="trace blue" d="M66 18 H170 V64 H66 Z" pathLength="1"></path>
+		<path class="trace green" d="M74 22 H174 V68 H74 Z" pathLength="1"></path>
+		<path class="trace blue" d="M98 18 V8" pathLength="1"></path>
+		<path class="trace green" d="M146 22 V8" pathLength="1"></path>
+		<path class="trace blue" d="M98 64 V76" pathLength="1"></path>
+		<path class="trace green" d="M146 68 V76" pathLength="1"></path>
+	</g>
+	<g class="nodes">
+		<circle class="node blue" cx="14" cy="42" r="2.4"></circle>
+		<circle class="node green" cx="226" cy="42" r="2.4"></circle>
+		<circle class="node blue" cx="98" cy="8" r="1.8"></circle>
+		<circle class="node green" cx="146" cy="8" r="1.8"></circle>
+		<circle class="node blue" cx="98" cy="76" r="1.8"></circle>
+		<circle class="node green" cx="146" cy="76" r="1.8"></circle>
+	</g>
+	<g class="word" font-family="'JetBrains Mono', ui-monospace, monospace" font-weight="700">
+		<text class="ghost" x="121.6" y="51.4" text-anchor="middle">
+			<tspan class="brace" dy="1">{"{"}</tspan><tspan dx="7" dy="-1">SPQR</tspan><tspan class="brace" dx="7" dy="1">{"}"}</tspan>
+		</text>
+		<text class="main" x="120" y="50" text-anchor="middle">
+			<tspan class="brace" dy="1">{"{"}</tspan><tspan dx="7" dy="-1">SPQR</tspan><tspan class="brace" dx="7" dy="1">{"}"}</tspan>
+		</text>
+	</g>
+</svg>
+
+<style>
+	.spqr {
+		--green: #3cf2a0;
+		--blue: #3a8dff;
+		overflow: visible;
+	}
+	.blue {
+		stroke: var(--blue);
+	}
+	.green {
+		stroke: var(--green);
+	}
+	.node.blue {
+		fill: var(--blue);
+		stroke: none;
+	}
+	.node.green {
+		fill: var(--green);
+		stroke: none;
+	}
+	.word text {
+		font-size: 19px;
+		letter-spacing: 0.08em;
+	}
+	.word .brace {
+		font-size: 27px;
+	}
+	.main {
+		fill: var(--green);
+		filter: drop-shadow(0 0 3px color-mix(in oklab, var(--green) 60%, transparent));
+	}
+	.ghost {
+		fill: var(--blue);
+		opacity: 0.85;
+	}
+
+	/* Load sequence: traces draw in, nodes pop, then the letters glitch on. */
+	.spqr--animated .trace {
+		stroke-dasharray: 1;
+		stroke-dashoffset: 1;
+		animation: draw 0.7s cubic-bezier(0.6, 0, 0.3, 1) forwards;
+	}
+	.spqr--animated .trace:nth-child(2) {
+		animation-delay: 0.05s;
+	}
+	.spqr--animated .trace:nth-child(3),
+	.spqr--animated .trace:nth-child(4) {
+		animation-delay: 0.25s;
+		animation-duration: 0.9s;
+	}
+	.spqr--animated .trace:nth-child(n + 5) {
+		animation-delay: 0.7s;
+		animation-duration: 0.3s;
+	}
+	.spqr--animated .node {
+		opacity: 0;
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: pop 0.25s ease-out forwards;
+	}
+	.spqr--animated .node:nth-child(-n + 2) {
+		animation-delay: 0.1s;
+	}
+	.spqr--animated .node:nth-child(n + 3) {
+		animation-delay: 0.95s;
+	}
+	.spqr--animated .main,
+	.spqr--animated .ghost {
+		opacity: 0;
+		animation: glitch-on 0.6s steps(1) 1.05s forwards;
+	}
+	.spqr--animated .ghost {
+		animation-name: glitch-ghost;
+	}
+
+	@keyframes draw {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+	@keyframes pop {
+		0% {
+			opacity: 0;
+			transform: scale(0);
+		}
+		70% {
+			opacity: 1;
+			transform: scale(1.6);
+		}
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+	@keyframes glitch-on {
+		0% {
+			opacity: 1;
+			clip-path: inset(10% 0 60% 0);
+			transform: translateX(-3px);
+		}
+		15% {
+			opacity: 0;
+		}
+		25% {
+			opacity: 1;
+			clip-path: inset(55% 0 5% 0);
+			transform: translateX(4px);
+		}
+		40% {
+			opacity: 1;
+			clip-path: inset(0 0 40% 0);
+			transform: translateX(-1px);
+		}
+		55% {
+			opacity: 0.3;
+			clip-path: none;
+			transform: none;
+		}
+		70%,
+		100% {
+			opacity: 1;
+			clip-path: none;
+			transform: none;
+		}
+	}
+	@keyframes glitch-ghost {
+		0% {
+			opacity: 0.85;
+			transform: translateX(5px);
+		}
+		25% {
+			opacity: 0;
+		}
+		40% {
+			opacity: 0.85;
+			transform: translateX(-4px);
+		}
+		70%,
+		100% {
+			opacity: 0.85;
+			transform: none;
+		}
+	}
+</style>

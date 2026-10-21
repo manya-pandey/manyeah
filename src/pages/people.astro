@@ -1,0 +1,75 @@
+---
+import Section from "@/layouts/Section.astro";
+import { getCollection, render } from "astro:content";
+
+const people = (await getCollection("people")).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Section section="people">
+	<ul class="grid gap-6 sm:grid-cols-2">
+		{
+			people.map(async (person, i) => {
+				const { Content } = await render(person);
+				return (
+					<li class="card" style={`--tilt: ${i % 2 ? 1 : -1}deg`}>
+						<h2>
+							{person.data.link ? (
+								<a href={person.data.link} rel="noopener" target="_blank">
+									{person.data.name}
+								</a>
+							) : (
+								person.data.name
+							)}
+						</h2>
+						<p class="who">{person.data.who}</p>
+						<div class="prose note">
+							<Content />
+						</div>
+					</li>
+				);
+			})
+		}
+	</ul>
+</Section>
+
+<style>
+	ul {
+		list-style: none;
+		padding: 0;
+	}
+	.card {
+		padding: 1.2rem 1.3rem 1.3rem;
+		border: 1.5px solid var(--ink);
+		border-radius: 3px 8px 4px 9px / 8px 4px 9px 3px;
+		background: color-mix(in oklab, var(--bg) 92%, var(--ink));
+		box-shadow: 4px 4px 0 var(--line);
+		transform: rotate(var(--tilt));
+		transition: transform 0.25s ease;
+	}
+	.card:hover {
+		transform: rotate(0) translateY(-2px);
+	}
+	h2 {
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 1.35rem;
+		letter-spacing: 0.03em;
+	}
+	h2 a {
+		color: inherit;
+		text-decoration: none;
+	}
+	h2 a:hover {
+		color: var(--accent);
+	}
+	.who {
+		font-family: var(--font-hand);
+		font-size: 1.3rem;
+		color: var(--accent);
+	}
+	.note {
+		margin-top: 0.5rem;
+		font-size: 1.08rem;
+		line-height: 1.5;
+	}
+</style>

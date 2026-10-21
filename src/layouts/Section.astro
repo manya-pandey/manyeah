@@ -1,0 +1,119 @@
+---
+import Doodle from "@/components/Doodle.astro";
+import DoodleNav from "@/components/DoodleNav.astro";
+import PaletteSwitcher from "@/components/PaletteSwitcher.astro";
+import { ROUTES, SITE, type RouteName } from "@/consts";
+import Base from "./Base.astro";
+
+interface Props {
+	section: RouteName;
+	title?: string;
+	description?: string;
+}
+
+const { section, title, description } = Astro.props;
+const route = ROUTES.find((r) => r.NAME === section)!;
+---
+
+<Base title={title ?? section} description={description ?? route.BLURB}>
+	<div class="page">
+		<header class="head">
+			<a href="/" class="home">{SITE.NAME}</a>
+			<PaletteSwitcher class="compact" />
+		</header>
+		<DoodleNav current={section} compact />
+
+		<main>
+			<div class="title">
+				<Doodle name={section} class="title-doodle" />
+				<div>
+					<h1>{title ?? section}</h1>
+					{!title && <p class="blurb">{route.BLURB}</p>}
+				</div>
+			</div>
+			<slot />
+		</main>
+
+		<footer class="foot">
+			<a href="/">← back to the city</a>
+			<a href={SITE.RESUME}>résumé</a>
+		</footer>
+	</div>
+</Base>
+
+<style>
+	.page {
+		position: relative;
+		z-index: 2;
+		max-width: 52rem;
+		margin-inline: auto;
+		padding: clamp(1rem, 3vw, 2rem) 1rem 3rem;
+	}
+	.head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 1.5rem;
+	}
+	.home {
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 1.5rem;
+		letter-spacing: 0.04em;
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.head :global(.palettes.compact) {
+		gap: 0.45rem;
+		padding: 0;
+	}
+	.head :global(.palettes.compact .swatch) {
+		width: 1.35rem;
+		height: 1.35rem;
+	}
+	main {
+		margin-top: 3rem;
+	}
+	.title {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-bottom: 2.5rem;
+	}
+	.title :global(.title-doodle) {
+		width: 4.5rem;
+		height: 4.5rem;
+		flex: none;
+		color: var(--accent);
+	}
+	h1 {
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: clamp(2.2rem, 6vw, 3.4rem);
+		line-height: 1;
+		letter-spacing: 0.04em;
+		text-transform: lowercase;
+	}
+	.blurb {
+		margin-top: 0.4rem;
+		font-family: var(--font-hand);
+		font-size: 1.4rem;
+		color: var(--muted);
+	}
+	.foot {
+		display: flex;
+		justify-content: space-between;
+		margin-top: 4rem;
+		padding-top: 1rem;
+		border-top: 1.5px dashed var(--line);
+		font-family: var(--font-hand);
+		font-size: 1.3rem;
+	}
+	.foot a {
+		color: var(--muted);
+		text-decoration: none;
+	}
+	.foot a:hover {
+		color: var(--accent);
+	}
+</style>

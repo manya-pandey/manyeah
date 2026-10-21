@@ -1,0 +1,109 @@
+---
+import { fullDate } from "@/lib/format";
+import Section from "@/layouts/Section.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blogs", ({ data }) => !data.draft)).sort(
+	(a, b) => +b.data.date - +a.data.date,
+);
+const quotes = await getCollection("quotes");
+---
+
+<Section section="blogs">
+	<ol class="posts">
+		{
+			posts.map((post) => (
+				<li>
+					<a href={`/blogs/${post.id}`}>
+						<span class="post-title">{post.data.title}</span>
+						<time datetime={post.data.date.toISOString()}>{fullDate(post.data.date)}</time>
+					</a>
+					{post.data.description && <p class="desc">{post.data.description}</p>}
+				</li>
+			))
+		}
+	</ol>
+
+	{
+		quotes.length > 0 && (
+			<section class="quotes" aria-labelledby="quotes-h">
+				<h2 id="quotes-h">quotes I keep</h2>
+				{quotes.map((q, i) => (
+					<blockquote style={`--tilt: ${[-0.4, 0.3, -0.2, 0.4][i % 4]}deg`}>
+						<p>“{q.data.text}”</p>
+						<footer>— {q.data.by}</footer>
+					</blockquote>
+				))}
+			</section>
+		)
+	}
+</Section>
+
+<style>
+	.posts {
+		list-style: none;
+		padding: 0;
+	}
+	.posts li {
+		padding: 1rem 0;
+		border-top: 1.5px dashed var(--line);
+	}
+	.posts a {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 1rem;
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.post-title {
+		font-size: 1.45rem;
+		font-weight: 600;
+	}
+	.posts a:hover .post-title {
+		color: var(--accent);
+	}
+	time {
+		flex: none;
+		color: var(--muted);
+		font-style: italic;
+	}
+	.desc {
+		margin-top: 0.2rem;
+		color: var(--muted);
+		font-size: 1.08rem;
+	}
+	.quotes {
+		margin-top: 3.5rem;
+		display: grid;
+		gap: 1.5rem;
+	}
+	.quotes h2 {
+		font-family: var(--font-hand);
+		font-size: 1.8rem;
+		color: var(--muted);
+	}
+	blockquote {
+		padding: 1.1rem 1.4rem;
+		border-left: 3px solid var(--accent);
+		background: color-mix(in oklab, var(--bg) 92%, var(--ink));
+		transform: rotate(var(--tilt));
+	}
+	blockquote p {
+		font-size: 1.3rem;
+		font-style: italic;
+		line-height: 1.45;
+	}
+	blockquote footer {
+		margin-top: 0.4rem;
+		font-family: var(--font-hand);
+		font-size: 1.25rem;
+		color: var(--accent);
+	}
+	@media (max-width: 560px) {
+		.posts a {
+			flex-direction: column;
+			gap: 0.1rem;
+		}
+	}
+</style>

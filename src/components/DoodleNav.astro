@@ -1,0 +1,159 @@
+---
+import { ROUTES, type RouteName } from "@/consts";
+import Doodle from "./Doodle.astro";
+
+interface Props {
+	current?: RouteName;
+	compact?: boolean;
+}
+
+const { current, compact = false } = Astro.props;
+---
+
+<nav aria-label="Sections" class:list={["doodle-nav", { "doodle-nav--compact": compact }]}>
+	<ul>
+		{
+			ROUTES.map((route, i) => (
+				<li style={`--tilt: ${[-2, 1.5, -1, 2, -1.5][i]}deg`}>
+					<a
+						href={route.PATH}
+						aria-current={current === route.NAME ? "page" : undefined}
+						title={route.BLURB}
+					>
+						<span class="frame">
+							<svg class="bracket" viewBox="0 0 10 56" aria-hidden="true">
+								<path d="M8.5 2.5c-2.6.2-4.8.1-6.3.6-.6 16.6-.5 33.2.2 49.8 1.6.4 3.8.4 6.1.6" />
+							</svg>
+							<Doodle name={route.NAME} class="icon" />
+							<svg class="bracket bracket--r" viewBox="0 0 10 56" aria-hidden="true">
+								<path d="M8.5 2.5c-2.6.2-4.8.1-6.3.6-.6 16.6-.5 33.2.2 49.8 1.6.4 3.8.4 6.1.6" />
+							</svg>
+						</span>
+						<span class="label">{route.NAME}</span>
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</nav>
+
+<style>
+	ul {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.5rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	li {
+		transform: rotate(var(--tilt));
+	}
+	a {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.15rem;
+		color: var(--ink);
+		text-decoration: none;
+		font-family: var(--font-hand);
+		font-weight: 500;
+		font-size: 1.6rem;
+		line-height: 1;
+		transition: color 0.2s ease;
+	}
+	.frame {
+		display: flex;
+		align-items: center;
+		gap: 0.1rem;
+	}
+	.bracket {
+		width: 0.55rem;
+		height: 3.4rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.6;
+		stroke-linecap: round;
+		opacity: 0.7;
+	}
+	.bracket--r {
+		transform: scaleX(-1);
+	}
+	.frame :global(.icon) {
+		width: 2.9rem;
+		height: 2.9rem;
+		transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+	}
+	.label {
+		position: relative;
+	}
+	/* Scribbled underline on hover / current page */
+	.label::after {
+		content: "";
+		position: absolute;
+		left: -4%;
+		right: -4%;
+		bottom: -0.15rem;
+		height: 0.45rem;
+		--scribble: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'><path d='M2 5c20-3 40-3.5 60-2.2 12 .8 24 .4 36-.8' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'/></svg>");
+		-webkit-mask: var(--scribble) no-repeat center / 100% 100%;
+		mask: var(--scribble) no-repeat center / 100% 100%;
+		background: var(--accent);
+		opacity: 0.8;
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.3s ease;
+	}
+	a:hover,
+	a:focus-visible,
+	a[aria-current="page"] {
+		color: var(--accent);
+	}
+	a:hover .label::after,
+	a:focus-visible .label::after,
+	a[aria-current="page"] .label::after {
+		transform: scaleX(1);
+	}
+	a:hover :global(.icon) {
+		transform: rotate(-8deg) scale(1.08);
+		animation: wobble 0.6s ease-in-out infinite alternate 0.3s;
+	}
+	@keyframes wobble {
+		from {
+			transform: rotate(-8deg) scale(1.08);
+		}
+		to {
+			transform: rotate(6deg) scale(1.08);
+		}
+	}
+
+	.doodle-nav--compact a {
+		font-size: 1.3rem;
+	}
+	.doodle-nav--compact .frame :global(.icon) {
+		width: 2rem;
+		height: 2rem;
+	}
+	.doodle-nav--compact .bracket {
+		height: 2.4rem;
+	}
+
+	@media (max-width: 640px) {
+		ul {
+			gap: 0.25rem;
+		}
+		a {
+			font-size: 1.15rem;
+		}
+		.frame :global(.icon),
+		.doodle-nav--compact .frame :global(.icon) {
+			width: 1.9rem;
+			height: 1.9rem;
+		}
+		.bracket,
+		.doodle-nav--compact .bracket {
+			height: 2.3rem;
+			width: 0.4rem;
+		}
+	}
+</style>

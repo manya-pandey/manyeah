@@ -1,0 +1,45 @@
+---
+import { DEFAULT_PALETTE, PALETTES, SITE } from "@/consts";
+import "@/styles/global.css";
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const { title, description = SITE.DESCRIPTION } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE.NAME}` : SITE.NAME;
+const paletteIds = PALETTES.map((p) => p.ID);
+---
+
+<!doctype html>
+<html lang="en" data-palette={DEFAULT_PALETTE}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{fullTitle}</title>
+		<meta name="description" content={description} />
+		<meta property="og:title" content={fullTitle} />
+		<meta property="og:description" content={description} />
+		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+
+		<!-- The full SPQR mark holds at 64 and 32px; at 16px it's letters only. -->
+		<link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+		<!-- Apply the saved palette before first paint. -->
+		<script is:inline define:vars={{ paletteIds }}>
+			try {
+				const saved = localStorage.getItem("palette");
+				if (saved && paletteIds.includes(saved)) document.documentElement.dataset.palette = saved;
+			} catch {}
+		</script>
+		<slot name="head" />
+	</head>
+	<body class="min-h-dvh">
+		<div class="grain" aria-hidden="true"></div>
+		<slot />
+	</body>
+</html>

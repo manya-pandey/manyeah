@@ -1,0 +1,14 @@
+---
+import SpqrMark from "@/components/SpqrMark.astro";
+import Base from "@/layouts/Base.astro";
+---
+
+<Base title="Not found">
+	<main class="relative z-2 flex min-h-dvh flex-col items-center justify-center gap-6 bg-[#070908] p-6 text-center">
+		<SpqrMark animated class="w-[min(380px,80vw)]" />
+		<p class="font-mono text-sm tracking-[0.2em] text-[#3cf2a0] uppercase opacity-70">
+			404 · this road doesn't lead to Rome
+		</p>
+		<a href="/" class="font-hand text-2xl text-[#3a8dff] underline underline-offset-4">take me back</a>
+	</main>
+</Base>

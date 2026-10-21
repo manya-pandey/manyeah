@@ -1,0 +1,93 @@
+---
+// One item in a section list: a title (linked if there's somewhere to go),
+// a line of small meta, and the markdown body.
+interface Props {
+	title: string;
+	href?: string;
+	meta?: (string | undefined)[];
+	tag?: string;
+}
+
+const { title, href, meta = [], tag } = Astro.props;
+const external = href?.startsWith("http");
+---
+
+<article class="entry">
+	<div class="entry-head">
+		<h2>
+			{
+				href ? (
+					<a href={href} {...(external ? { rel: "noopener", target: "_blank" } : {})}>
+						{title}
+						{external && <span aria-hidden="true">↗</span>}
+					</a>
+				) : (
+					title
+				)
+			}
+		</h2>
+		{tag && <span class="tag">{tag}</span>}
+	</div>
+	{meta.filter(Boolean).length > 0 && <p class="meta">{meta.filter(Boolean).join(" · ")}</p>}
+	<div class="body prose">
+		<slot />
+	</div>
+</article>
+
+<style>
+	.entry {
+		padding: 1.4rem 0;
+		border-top: 1.5px dashed var(--line);
+	}
+	.entry-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+	h2 {
+		font-size: 1.45rem;
+		font-weight: 600;
+		line-height: 1.2;
+	}
+	h2 a {
+		color: var(--ink);
+		text-decoration: none;
+		background: linear-gradient(var(--accent), var(--accent)) no-repeat 0 100% / 0 1.5px;
+		transition:
+			background-size 0.25s ease,
+			color 0.2s;
+	}
+	h2 a:hover {
+		color: var(--accent);
+		background-size: 100% 1.5px;
+	}
+	h2 a span {
+		font-size: 0.85em;
+		color: var(--muted);
+	}
+	.tag {
+		flex: none;
+		padding: 0.05rem 0.55rem;
+		border: 1.5px solid var(--accent);
+		border-radius: 999px 800px 900px 700px;
+		color: var(--accent);
+		font-family: var(--font-hand);
+		font-size: 1.1rem;
+	}
+	.meta {
+		margin-top: 0.2rem;
+		color: var(--muted);
+		font-style: italic;
+	}
+	.body {
+		margin-top: 0.6rem;
+		max-width: 42rem;
+		font-size: 1.12rem;
+		line-height: 1.55;
+		color: var(--ink);
+	}
+	.body:empty {
+		display: none;
+	}
+</style>

@@ -1,0 +1,26 @@
+---
+import Entry from "@/components/Entry.astro";
+import { fullDate } from "@/lib/format";
+import Section from "@/layouts/Section.astro";
+import { getCollection, render } from "astro:content";
+
+const items = (await getCollection("snippets")).sort((a, b) => +b.data.date - +a.data.date);
+---
+
+<Section section="snippets">
+	{
+		items.map(async (item) => {
+			const { Content } = await render(item);
+			return (
+				<Entry
+					title={item.data.title}
+					href={item.data.link}
+					tag={item.data.role}
+					meta={[fullDate(item.data.date), item.data.where]}
+				>
+					<Content />
+				</Entry>
+			);
+		})
+	}
+</Section>

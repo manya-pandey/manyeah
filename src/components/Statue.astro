@@ -1,0 +1,159 @@
+---
+import { STATUE } from "@/consts";
+---
+
+<!-- The floating statue behind the landing page. Rendering approach adapted from LHRUN/one-space (MIT). -->
+<div id="statue" class="statue" data-src={STATUE.SRC} aria-hidden="true"></div>
+
+<script>
+	import * as THREE from "three";
+	import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+	import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
+
+	const container = document.getElementById("statue")!;
+	const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+	const ready = () => window.dispatchEvent(new Event("statue:ready"));
+
+	const cssVar = (name: string) =>
+		getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+	const cssColor = (name: string) => new THREE.Color(cssVar(name) || "#ffffff");
+	const cssNumber = (name: string, fallback: number) => Number(cssVar(name)) || fallback;
+
+	function start() {
+		let renderer: THREE.WebGLRenderer;
+		try {
+			renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+		} catch {
+			// No WebGL: the page still works, there's just no statue.
+			ready();
+			return;
+		}
+		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		container.appendChild(renderer.domElement);
+
+		const scene = new THREE.Scene();
+		const camera = new THREE.PerspectiveCamera(
+			40,
+			window.innerWidth / window.innerHeight,
+			0.1,
+			100,
+		);
+		camera.position.set(0, 0, 6);
+
+		const ambient = new THREE.AmbientLight(0xffffff, cssNumber("--statue-ambient", 0.25));
+		const key = new THREE.PointLight(cssColor("--statue-light"), 42, 0, 1.6);
+		key.position.set(2, 1.5, 3);
+		const rim = new THREE.DirectionalLight(cssColor("--accent"), 1.4);
+		rim.position.set(-3, 2, -2);
+		scene.add(ambient, key, rim);
+
+		// Recolour the lights whenever the palette changes.
+		new MutationObserver(() => {
+			key.color = cssColor("--statue-light");
+			rim.color = cssColor("--accent");
+			ambient.intensity = cssNumber("--statue-ambient", 0.25);
+		}).observe(document.documentElement, { attributes: true, attributeFilter: ["data-palette"] });
+
+		const pivot = new THREE.Group();
+		scene.add(pivot);
+
+		const draco = new DRACOLoader().setDecoderPath("/draco/");
+		const loader = new GLTFLoader().setDRACOLoader(draco);
+		loader.load(
+			container.dataset.src!,
+			(gltf) => {
+				const model = gltf.scene;
+				const marble = new THREE.MeshStandardMaterial({
+					color: 0xf3efe7,
+					roughness: 0.55,
+					metalness: 0.05,
+				});
+				model.traverse((obj) => {
+					if ((obj as THREE.Mesh).isMesh) (obj as THREE.Mesh).material = marble;
+				});
+
+				// Centre and normalise so any bust swapped in sits the same way.
+				const box = new THREE.Box3().setFromObject(model);
+				const size = box.getSize(new THREE.Vector3());
+				const centre = box.getCenter(new THREE.Vector3());
+				model.position.sub(centre);
+				const scale = 3.2 / Math.max(size.x, size.y, size.z);
+				pivot.scale.setScalar(scale);
+				pivot.add(model);
+				// Turn the default scan to face the viewer, slightly in profile.
+				pivot.rotation.y = -Math.PI / 2 + 0.35;
+
+				container.classList.add("statue--in");
+				draco.dispose();
+				ready();
+			},
+			undefined,
+			() => ready(),
+		);
+
+		// Light follows the pointer; the bust leans a touch toward it.
+		const target = { x: 0, y: 0 };
+		const onMove = (x: number, y: number) => {
+			target.x = (x / window.innerWidth) * 2 - 1;
+			target.y = -((y / window.innerHeight) * 2 - 1);
+		};
+		window.addEventListener("pointermove", (e) => onMove(e.clientX, e.clientY), { passive: true });
+
+		// Where the bust sits: right of the name on wide screens, above it on phones.
+		const anchor = new THREE.Vector2();
+		const onResize = () => {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			const narrow = camera.aspect < 0.8;
+			camera.position.z = narrow ? (6 / Math.max(camera.aspect, 0.5)) * 0.8 : 6;
+			anchor.set(narrow ? 0 : Math.min(camera.aspect - 1, 0.9), narrow ? 0.9 : 0);
+			pivot.position.x = anchor.x;
+			camera.updateProjectionMatrix();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+		};
+		window.addEventListener("resize", onResize);
+		onResize();
+
+		let visible = true;
+		document.addEventListener("visibilitychange", () => {
+			visible = document.visibilityState === "visible";
+			if (visible) requestAnimationFrame(tick);
+		});
+
+		const startedAt = performance.now();
+		const baseY = -Math.PI / 2 + 0.35;
+		function tick() {
+			if (!visible) return;
+			const t = (performance.now() - startedAt) / 1000;
+			key.position.x += (target.x * 4 - key.position.x) * 0.06;
+			// Keep the light at or above eye level; lit from below, the bust turns ghoulish.
+			key.position.y += (Math.max(target.y * 2.5, -0.2) + 1 - key.position.y) * 0.06;
+			if (reduceMotion) {
+				pivot.position.y = anchor.y;
+			} else {
+				pivot.position.y = anchor.y + Math.sin(t * 0.6) * 0.12;
+				pivot.rotation.y = baseY + Math.sin(t * 0.25) * 0.12 + target.x * 0.12;
+				pivot.rotation.x = Math.sin(t * 0.4) * 0.03 - target.y * 0.05;
+			}
+			renderer.render(scene, camera);
+			requestAnimationFrame(tick);
+		}
+		requestAnimationFrame(tick);
+	}
+
+	start();
+</script>
+
+<style>
+	.statue {
+		position: fixed;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 1.6s ease;
+	}
+	.statue:global(.statue--in) {
+		opacity: var(--statue-opacity);
+	}
+</style>

@@ -32,7 +32,7 @@ npm run check      # type-check
 
 Front-matter fields for each section are defined in `src/content.config.ts`. Everything in `src/content` right now is placeholder text.
 
-**Résumé:** put the PDF at `public/resume.pdf`. The landing-page link already points there.
+**Résumé:** `public/resume.pdf`. Replace the file to update it; every résumé link points there.
 
 ## The statue
 

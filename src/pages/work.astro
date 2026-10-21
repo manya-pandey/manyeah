@@ -8,6 +8,7 @@ const groups = [
 	{ heading: "Internships", items: items.filter((i) => i.data.kind === "internship") },
 	{ heading: "Leadership & roles", items: items.filter((i) => i.data.kind === "leadership") },
 	{ heading: "Projects", items: items.filter((i) => i.data.kind === "project") },
+	{ heading: "Certifications", items: items.filter((i) => i.data.kind === "certification") },
 ].filter((g) => g.items.length);
 ---
 
@@ -23,6 +24,7 @@ const groups = [
 							title={item.data.title}
 							href={item.data.link}
 							meta={[item.data.role, item.data.org, item.data.location, item.data.period]}
+							tag={item.data.tags.length ? item.data.tags.join(" · ") : undefined}
 						>
 							<Content />
 						</Entry>

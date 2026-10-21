@@ -105,7 +105,7 @@ const presetIds = Object.values(THEMES).map((t) => t.ID);
 					set("--statue-opacity", light ? "0.42" : "0.6");
 					set("--statue-ambient", light ? "0.25" : "0.7");
 					set("--statue-light", rgbToHex(hexToRgb(b).map((v) => v * 0.25 + 255 * 0.75)));
-					set("--texture-opacity", light ? "0.15" : "0.1");
+					set("--texture-opacity", light ? "0.07" : "0.05");
 					set("color-scheme", light ? "light" : "dark");
 					root.dataset.palette = "custom";
 				}

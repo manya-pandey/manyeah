@@ -32,7 +32,11 @@ npm run check      # type-check
 
 Front-matter fields for each section are defined in `src/content.config.ts`. Everything in `src/content` right now is placeholder text.
 
-**Résumé:** `public/resume.pdf`. Replace the file to update it; every résumé link points there.
+**Résumé:** the résumé links open `/resume`, a page showing `public/resume.webp` with links to `public/resume.pdf` (some embedded browsers refuse to open a PDF directly). After replacing the PDF, regenerate the image:
+
+```sh
+pdftoppm -r 200 -png -singlefile public/resume.pdf resume && convert resume.png -quality 82 public/resume.webp && rm resume.png
+```
 
 ## The statue
 
@@ -55,6 +59,12 @@ The whole site is set in Bree Serif (`--font-main` in `src/styles/global.css`). 
 - Below the first screen is the About section: a flip-card photo (pixel art on the front, the photo on hover) whose corners round off as it scrolls in, a row of contact icons, and a few paragraphs. The photos in `public/about/` are placeholders rendered from the statue.
 - At the very bottom a note points up at the nav's **work** link.
 - The statue turns a full roll as the page scrolls.
+
+## Bricks on the section pages
+
+Every section page (work, research, people, blogs, snippets, résumé) has a dashed outline of five bricks in the bottom-right corner. Clicking the outline lays a brick. The fifth turns the course into a marble column that rises up the page, solid in the bottom quarter of the screen and fading out above it, and the empty outline steps left to start the next column. Up to six columns show. The count is kept in the visitor's own browser and shared across the section pages (`src/components/Colonnade.astro`).
+
+- The statue glides from beside the name to the middle of the screen as the About section scrolls in.
 
 ## The theme menu
 

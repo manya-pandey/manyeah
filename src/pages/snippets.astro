@@ -16,7 +16,7 @@ const items = (await getCollection("snippets")).sort((a, b) => +b.data.date - +a
 					title={item.data.title}
 					href={item.data.link}
 					tag={item.data.role}
-					meta={[fullDate(item.data.date), item.data.where]}
+					meta={[item.data.when ?? fullDate(item.data.date), item.data.where]}
 				>
 					<Content />
 				</Entry>

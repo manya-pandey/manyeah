@@ -4,7 +4,9 @@ export const SITE = {
 	NAME: "Manya",
 	INTRO: "Builds things, reads papers, and keeps a small city of bricks.",
 	DESCRIPTION: "Work, research, people, blogs and snippets.",
-	RESUME: "/resume.pdf",
+	// The résumé page shows public/resume.webp and links to RESUME_PDF.
+	RESUME: "/resume",
+	RESUME_PDF: "/resume.pdf",
 	// Still an open item in the design doc; set to a string to show it under the intro.
 	TAGLINE: null as string | null,
 };
@@ -16,9 +18,9 @@ export const ABOUT = {
 	PHOTO_PIXEL: "/about/avatar-pixel.png",
 	PHOTO: "/about/avatar.jpg",
 	PARAGRAPHS: [
-		"Hello, I'm Manya, a computer science student at KIIT in Bhubaneswar who builds things and reads too many papers. Welcome to my personal space!",
-		"I work on AI research and engineering: making time series foundation models sturdier at inference time at Birla AI Labs, building retrieval and LLM systems at BNY, and studying how a language model's confidence relates to its reasoning. I also lead AI/ML at Google Developer Group Bhubaneswar.",
-		"If you'd like to get to know me better, the sections up top are a good place to start.",
+		"Hello, I'm Manya Pandey, a computer science student at KIIT in Bhubaneswar (2023–27), and before that La Martiniere Girls' College in Lucknow. I build things and read too many papers. Welcome to my personal space!",
+		"Most of my time goes into AI research and engineering. At Birla AI Labs I work on making time series foundation models sturdier at inference time, which became GITCO at two ICML 2026 workshops. At BNY I built retrieval and LLM systems for stress-testing and regulatory work. At RespAI Lab I study how a language model's confidence relates to its reasoning, and helped bootstrap NLP for Nagamese, a low-resource creole.",
+		"Outside the lab I lead AI/ML at Google Developer Group Bhubaneswar, ranked 19th of about 32,000 teams in the Amazon ML Challenge 2026, and was a delegate at Google DeepMind's APAC research symposium. If you'd like to get to know me better, the sections up top are a good place to start.",
 	],
 	EMAIL: "manyapandey7842@gmail.com",
 	// Shown as the icon row, in this order. The icon set also has

@@ -140,7 +140,6 @@ import { STATUE } from "@/consts";
 			const narrow = camera.aspect < 0.8;
 			camera.position.z = narrow ? (6 / Math.max(camera.aspect, 0.5)) * 0.8 : 6;
 			anchor.set(narrow ? 0 : Math.min(camera.aspect - 1, 0.9), narrow ? 0.9 : 0);
-			pivot.position.x = anchor.x;
 			camera.updateProjectionMatrix();
 			renderer.setSize(window.innerWidth, window.innerHeight);
 		};
@@ -160,6 +159,17 @@ import { STATUE } from "@/consts";
 			return max > 0 ? window.scrollY / max : 0;
 		};
 
+		// As the About section scrolls in, the bust glides from beside the name
+		// to the middle of the screen (eased, so it settles rather than stops).
+		const about = document.getElementById("about");
+		let centred = 0;
+		const centreTarget = () => {
+			if (!about) return 0;
+			const travel = about.offsetTop - window.innerHeight * 0.35;
+			const p = Math.min(1, Math.max(0, window.scrollY / Math.max(travel, 1)));
+			return p * p * (3 - 2 * p);
+		};
+
 		const startedAt = performance.now();
 		function tick() {
 			if (!visible) return;
@@ -167,11 +177,15 @@ import { STATUE } from "@/consts";
 			key.position.x += (1.2 + target.x * 1.6 - key.position.x) * 0.03;
 			// Keep the light at or above eye level; lit from below, the bust turns ghoulish.
 			key.position.y += (Math.max(target.y * 1.5, -0.2) + 1 - key.position.y) * 0.03;
+			centred += (centreTarget() - centred) * (reduceMotion ? 1 : 0.08);
+			const restX = anchor.x * (1 - centred);
+			const restY = anchor.y * (1 - centred);
+			pivot.position.x = restX;
 			if (reduceMotion) {
-				pivot.position.y = anchor.y;
+				pivot.position.y = restY;
 			} else {
 				roll += (scrollFraction() * Math.PI * 2 - roll) * 0.08;
-				pivot.position.y = anchor.y + Math.sin(t * 0.6) * 0.12;
+				pivot.position.y = restY + Math.sin(t * 0.6) * 0.12;
 				pivot.rotation.y = baseY + roll + Math.sin(t * 0.25) * 0.12 + target.x * 0.12;
 				pivot.rotation.x = roll + Math.sin(t * 0.4) * 0.03 - target.y * 0.05;
 			}

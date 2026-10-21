@@ -31,7 +31,7 @@
 	--statue-opacity: 0.42;
 	--statue-light: #ffe2c8;
 	--statue-ambient: 0.25;
-	--texture-opacity: 0.15;
+	--texture-opacity: 0.07;
 }
 
 :root[data-palette="midnight-chalk"] {
@@ -46,7 +46,7 @@
 	--statue-opacity: 0.6;
 	--statue-light: #e4ecff;
 	--statue-ambient: 0.7;
-	--texture-opacity: 0.1;
+	--texture-opacity: 0.05;
 }
 
 :root[data-palette="lavender"] {
@@ -63,7 +63,7 @@
 	--statue-opacity: 0.45;
 	--statue-light: #f3e8ff;
 	--statue-ambient: 0.3;
-	--texture-opacity: 0.15;
+	--texture-opacity: 0.07;
 }
 
 html {
@@ -96,7 +96,7 @@ body {
 }
 
 /* The noise texture behind the whole site, from LHRUN/one-space (MIT):
-   200px tiles at 15% in light themes, 10% in dark ones. */
+   200px tiles, kept faint: 7% in light themes, 5% in dark ones. */
 .grain {
 	position: fixed;
 	inset: 0;

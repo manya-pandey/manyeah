@@ -1,20 +1,25 @@
 ---
+import Colonnade from "@/components/Colonnade.astro";
 import Doodle from "@/components/Doodle.astro";
 import DoodleNav from "@/components/DoodleNav.astro";
 import { ROUTES, SITE, type RouteName } from "@/consts";
 import Base from "./Base.astro";
 
 interface Props {
-	section: RouteName;
+	// One of the nav sections; pages outside the nav (the résumé) leave it out
+	// and pass a title and blurb instead.
+	section?: RouteName;
 	title?: string;
+	blurb?: string;
 	description?: string;
 }
 
 const { section, title, description } = Astro.props;
-const route = ROUTES.find((r) => r.NAME === section)!;
+const route = ROUTES.find((r) => r.NAME === section);
+const blurb = Astro.props.blurb ?? (title ? undefined : route?.BLURB);
 ---
 
-<Base title={title ?? section} description={description ?? route.BLURB}>
+<Base title={title ?? section} description={description ?? blurb ?? route?.BLURB}>
 	<div class="page">
 		<header class="head">
 			<a href="/" class="home">{SITE.NAME}</a>
@@ -23,10 +28,10 @@ const route = ROUTES.find((r) => r.NAME === section)!;
 
 		<main>
 			<div class="title">
-				<Doodle name={section} class="title-doodle" />
+				<Doodle name={section ?? "about"} class="title-doodle" />
 				<div>
 					<h1>{title ?? section}</h1>
-					{!title && <p class="blurb">{route.BLURB}</p>}
+					{blurb && <p class="blurb">{blurb}</p>}
 				</div>
 			</div>
 			<slot />
@@ -37,6 +42,7 @@ const route = ROUTES.find((r) => r.NAME === section)!;
 			<a href={SITE.RESUME}>résumé</a>
 		</footer>
 	</div>
+	<Colonnade />
 </Base>
 
 <style>

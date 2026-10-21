@@ -1,0 +1,63 @@
+---
+import { SITE } from "@/consts";
+import Section from "@/layouts/Section.astro";
+
+// The résumé as an image, so it shows anywhere (some embedded browsers
+// refuse to open PDFs), with the PDF a click away. After replacing
+// public/resume.pdf, regenerate the image with:
+//   pdftoppm -r 200 -png -singlefile public/resume.pdf resume && convert resume.png -quality 82 public/resume.webp
+---
+
+<Section title="résumé" blurb="The one-page version.">
+	<div class="actions">
+		<a href={SITE.RESUME_PDF} target="_blank" rel="noopener">open the PDF ↗</a>
+		<a href={SITE.RESUME_PDF} download="Manya-Pandey-resume.pdf">download ↓</a>
+	</div>
+	<figure class="sheet">
+		<img
+			src="/resume.webp"
+			width="1700"
+			height="2200"
+			alt="Manya Pandey's résumé: education at KIIT, internships at Birla AI Labs and BNY, leadership roles, publications, certifications and technical skills."
+		/>
+	</figure>
+</Section>
+
+<style>
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+	}
+	.actions a {
+		padding: 0.4rem 0.85rem;
+		border: 1.5px solid var(--ink);
+		border-radius: 3px 6px 4px 7px / 6px 3px 7px 4px;
+		box-shadow: 3px 3px 0 var(--ink);
+		color: var(--ink);
+		text-decoration: none;
+		transition:
+			transform 0.12s ease,
+			box-shadow 0.12s ease,
+			color 0.15s;
+	}
+	.actions a:hover {
+		transform: translate(-1px, -1px);
+		box-shadow: 4px 4px 0 var(--accent);
+		color: var(--accent);
+	}
+	.sheet {
+		margin: 0;
+		border: 1.5px solid var(--line);
+		border-radius: 4px;
+		background: #fff;
+		box-shadow: 6px 6px 0 var(--line);
+		overflow: hidden;
+	}
+	.sheet img {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+</style>

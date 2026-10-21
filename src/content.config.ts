@@ -8,12 +8,12 @@ const work = defineCollection({
 	loader: glob({ base: "./src/content/work", pattern: "**/*.md" }),
 	schema: z.object({
 		title: z.string(),
-		kind: z.enum(["internship", "leadership", "project"]),
+		kind: z.enum(["internship", "leadership", "project", "certification"]),
 		org: z.string().optional(),
 		role: z.string().optional(),
 		location: z.string().optional(),
-		period: z.coerce.string(),
-		// Used for ordering; newest first.
+		period: z.coerce.string().optional(),
+		// Used for ordering only (newest first); undated items get a nominal one.
 		date: z.coerce.date(),
 		link: z.url().optional(),
 		tags: z.array(z.string()).default([]),
@@ -65,6 +65,8 @@ const snippets = defineCollection({
 	schema: z.object({
 		title: z.string(),
 		date: z.coerce.date(),
+		// Shown instead of the full date when only the month or year is known.
+		when: z.coerce.string().optional(),
 		where: z.string().optional(),
 		role: z.string().optional(),
 		link: z.url().optional(),

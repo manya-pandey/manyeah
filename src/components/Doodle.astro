@@ -3,14 +3,16 @@ import type { RouteName } from "@/consts";
 
 // Hand-drawn icons for the five categories, drawn loose on purpose and
 // stroked in currentColor so they follow the palette.
+type DoodleName = RouteName | "theme";
+
 interface Props {
-	name: RouteName;
+	name: DoodleName;
 	class?: string;
 }
 
 const { name, class: className = "" } = Astro.props;
 
-const paths: Record<RouteName, string[]> = {
+const paths: Record<DoodleName, string[]> = {
 	// briefcase
 	work: [
 		"M9 19.5c4-.6 26-.9 30 .3.8 5 .6 14-.3 18.6-6.2.9-24 .8-29.3-.2-.9-5.2-1.1-13.4-.4-18.7z",
@@ -46,6 +48,14 @@ const paths: Record<RouteName, string[]> = {
 		"M15.2 14.2c5.8-.5 12.8-.6 18.2-.1.4 5.4.4 11.2-.1 16.3-5.4.5-12.6.6-18 .1-.5-5.2-.5-11.2-.1-16.3z",
 		"M15.6 27.4c2.8-3.4 5.4-5.3 8-3.4 1.9 1.4 3.2 2.5 5.1.6 1.2-1.2 2.6-1.6 4.4.2",
 		"M28 17.4c1.3-.1 2.3.9 2.3 2.1s-1 2.2-2.2 2.2c-1.3 0-2.2-1-2.2-2.2 0-1.1.9-2.1 2.1-2.1z",
+	],
+	// painter's palette with a thumb hole and three dabs
+	theme: [
+		"M24.6 8.8c9.6-.4 16.8 6.2 16.6 14.2-.2 5.6-4.4 7.4-8.2 6.6-3-.6-5 .9-4.6 3.6.4 2.4 2.6 3.4 1.9 5.6-.8 2.4-3.7 3.2-7.2 2.9-8.6-.8-15.4-7.6-15.3-16.1.1-9.4 7.6-16.4 16.8-16.8z",
+		"M17.6 30.2c1.6-.1 2.8 1 2.8 2.5 0 1.4-1.2 2.6-2.7 2.6-1.4 0-2.6-1.1-2.6-2.5 0-1.4 1.1-2.5 2.5-2.6z",
+		"M15.6 19.4c1.2-.1 2.1.8 2.1 1.9 0 1.1-.9 2-2 2-1.1 0-2-.9-2-1.9 0-1.1.8-2 1.9-2z",
+		"M22.8 13.6c1.2-.1 2.1.8 2.1 1.9 0 1.1-.9 2-2 2-1.1 0-2-.9-2-1.9 0-1.1.8-2 1.9-2z",
+		"M31.6 14.6c1.2-.1 2.1.8 2.1 1.9 0 1.1-.9 2-2 2-1.1 0-2-.9-2-1.9 0-1.1.8-2 1.9-2z",
 	],
 };
 ---

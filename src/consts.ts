@@ -35,16 +35,14 @@ export const ROUTES: { NAME: RouteName; PATH: string; BLURB: string }[] = [
 	{ NAME: "snippets", PATH: "/snippets", BLURB: "Events I've run and rooms I've been in." },
 ];
 
-// Each palette is two primary colours (the halves of its swatch) plus the
-// tokens the rest of the site derives from them. The first one is the default.
-export const PALETTES = [
-	{ ID: "paper-clay", NAME: "Paper & clay", A: "#f2eadb", B: "#b4532a" },
-	{ ID: "midnight-chalk", NAME: "Midnight chalk", A: "#131a24", B: "#ece6d8" },
-	{ ID: "orchid-ink", NAME: "Orchid ink", A: "#1c1931", B: "#c97fbc" },
-	{ ID: "peacock-ledger", NAME: "Peacock ledger", A: "#eee6cf", B: "#0e5e63" },
-] as const;
-
-export const DEFAULT_PALETTE = PALETTES[0].ID;
+// The two built-in themes. Visitors get the light one or the dark one to
+// match their system, and can pick their own colours from the theme menu.
+// A / B are each theme's two primaries (background and accent); the other
+// tokens live in src/styles/global.css.
+export const THEMES = {
+	LIGHT: { ID: "paper-clay", NAME: "Cream", A: "#f2eadb", B: "#b4532a" },
+	DARK: { ID: "midnight-chalk", NAME: "Midnight", A: "#131a24", B: "#ece6d8" },
+} as const;
 
 // Bricks per marble block.
 export const BRICKS_PER_MARBLE = 5;

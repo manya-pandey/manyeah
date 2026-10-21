@@ -1,7 +1,6 @@
 ---
 import Doodle from "@/components/Doodle.astro";
 import DoodleNav from "@/components/DoodleNav.astro";
-import PaletteSwitcher from "@/components/PaletteSwitcher.astro";
 import { ROUTES, SITE, type RouteName } from "@/consts";
 import Base from "./Base.astro";
 
@@ -19,7 +18,6 @@ const route = ROUTES.find((r) => r.NAME === section)!;
 	<div class="page">
 		<header class="head">
 			<a href="/" class="home">{SITE.NAME}</a>
-			<PaletteSwitcher class="compact" />
 		</header>
 		<DoodleNav current={section} compact />
 
@@ -62,14 +60,6 @@ const route = ROUTES.find((r) => r.NAME === section)!;
 		letter-spacing: 0.04em;
 		color: var(--ink);
 		text-decoration: none;
-	}
-	.head :global(.palettes.compact) {
-		gap: 0.45rem;
-		padding: 0;
-	}
-	.head :global(.palettes.compact .swatch) {
-		width: 1.35rem;
-		height: 1.35rem;
 	}
 	main {
 		margin-top: 3rem;

@@ -53,7 +53,7 @@ import { STATUE } from "@/consts";
 			key.color = cssColor("--statue-light");
 			rim.color = cssColor("--accent");
 			ambient.intensity = cssNumber("--statue-ambient", 0.25);
-		}).observe(document.documentElement, { attributes: true, attributeFilter: ["data-palette"] });
+		}).observe(document.documentElement, { attributes: true, attributeFilter: ["data-palette", "style"] });
 
 		const baseY = Number(container.dataset.turn) || 0;
 		const pivot = new THREE.Group();

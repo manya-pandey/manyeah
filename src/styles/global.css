@@ -25,7 +25,8 @@
 	--color-marble: var(--marble);
 }
 
-/* Palettes. --a / --b are the two primaries shown in the swatch. */
+/* Themes. --a / --b are the two primaries (background and accent). A custom
+   theme from the theme menu sets these tokens inline on <html> instead. */
 :root,
 :root[data-palette="paper-clay"] {
 	color-scheme: light;
@@ -53,34 +54,6 @@
 	--statue-opacity: 0.6;
 	--statue-light: #e4ecff;
 	--statue-ambient: 0.7;
-}
-
-:root[data-palette="orchid-ink"] {
-	color-scheme: dark;
-	--a: #1c1931;
-	--b: #c97fbc;
-	--bg: var(--a);
-	--ink: #efe4f1;
-	--muted: #a99bb4;
-	--accent: var(--b);
-	--line: color-mix(in oklab, var(--ink) 16%, transparent);
-	--statue-opacity: 0.58;
-	--statue-light: #f6d6f0;
-	--statue-ambient: 0.65;
-}
-
-:root[data-palette="peacock-ledger"] {
-	color-scheme: light;
-	--a: #eee6cf;
-	--b: #0e5e63;
-	--bg: var(--a);
-	--ink: #1b2a2b;
-	--muted: #556461;
-	--accent: var(--b);
-	--line: color-mix(in oklab, var(--ink) 18%, transparent);
-	--statue-opacity: 0.42;
-	--statue-light: #d9f2ec;
-	--statue-ambient: 0.25;
 }
 
 :root {

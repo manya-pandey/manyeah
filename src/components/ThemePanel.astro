@@ -1,0 +1,540 @@
+---
+import { THEMES } from "@/consts";
+
+// The theme menu that opens from the nav. Visitors pick cream or midnight
+// (or let their system decide), or drag the bars / type hex codes to make
+// their own primary (background) and secondary (accent) colours, live.
+const colours = [
+	{ key: "a", name: "Primary", role: "background" },
+	{ key: "b", name: "Secondary", role: "accent" },
+] as const;
+---
+
+<div id="theme-panel" class="panel" role="dialog" aria-labelledby="theme-panel-title" hidden>
+	<div class="head">
+		<h2 id="theme-panel-title">theme</h2>
+		<span class="custom-chip" data-custom-chip hidden>your own</span>
+		<button type="button" class="close" data-theme-close aria-label="Close theme menu">×</button>
+	</div>
+
+	<div class="presets" role="radiogroup" aria-label="Preset themes">
+		<button
+			type="button"
+			role="radio"
+			data-preset="auto"
+			style={`--sa: ${THEMES.LIGHT.A}; --sb: ${THEMES.DARK.A};`}
+		>
+			<span class="swatch swatch--auto" aria-hidden="true"></span>
+			<span>Auto</span>
+		</button>
+		{
+			[THEMES.LIGHT, THEMES.DARK].map((t) => (
+				<button
+					type="button"
+					role="radio"
+					data-preset={t.ID}
+					style={`--sa: ${t.A}; --sb: ${t.B};`}
+				>
+					<span class="swatch" aria-hidden="true" />
+					<span>{t.NAME}</span>
+				</button>
+			))
+		}
+	</div>
+	<p class="auto-note">Auto uses Cream in light mode and Midnight in dark mode.</p>
+
+	{
+		colours.map((c) => (
+			<fieldset class="pick" data-pick={c.key}>
+				<legend>
+					{c.name} <span>· {c.role}</span>
+				</legend>
+				<div class="pick-row">
+					<input
+						id={`theme-${c.key}-well`}
+						class="well"
+						type="color"
+						aria-label={`${c.name} colour picker`}
+						data-field="well"
+					/>
+					<label class="hex">
+						<span class="sr-only">{c.name} hex code</span>
+						<input
+							id={`theme-${c.key}-hex`}
+							type="text"
+							maxlength="7"
+							spellcheck="false"
+							autocomplete="off"
+							data-field="hex"
+						/>
+					</label>
+				</div>
+				<label class="bar-row">
+					<span>hue</span>
+					<input id={`theme-${c.key}-hue`} class="bar bar--hue" type="range" min="0" max="360" data-field="h" />
+				</label>
+				<label class="bar-row">
+					<span>strength</span>
+					<input id={`theme-${c.key}-sat`} class="bar bar--sat" type="range" min="0" max="100" data-field="s" />
+				</label>
+				<label class="bar-row">
+					<span>shade</span>
+					<input id={`theme-${c.key}-shade`} class="bar bar--shade" type="range" min="0" max="100" data-field="l" />
+				</label>
+			</fieldset>
+		))
+	}
+
+	<div class="foot">
+		<span>Saved in this browser.</span>
+		<button type="button" class="reset" data-theme-reset>reset</button>
+	</div>
+</div>
+
+<script>
+	type Key = "a" | "b";
+	type Hsl = [number, number, number];
+
+	const theme = window.siteTheme;
+	const panel = document.getElementById("theme-panel")!;
+	const toggle = document.querySelector<HTMLButtonElement>("[data-theme-toggle]")!;
+	const presets = [...panel.querySelectorAll<HTMLButtonElement>("[data-preset]")];
+	const chip = panel.querySelector<HTMLElement>("[data-custom-chip]")!;
+	const picks = Object.fromEntries(
+		[...panel.querySelectorAll<HTMLFieldSetElement>("[data-pick]")].map((f) => [f.dataset.pick, f]),
+	) as Record<Key, HTMLFieldSetElement>;
+	const field = (key: Key, name: string) =>
+		picks[key].querySelector<HTMLInputElement>(`[data-field="${name}"]`)!;
+
+	const hsl: Record<Key, Hsl> = { a: [0, 0, 0], b: [0, 0, 0] };
+	// The exact hex a colour came from (a preset or a typed code), so rounding
+	// through HSL doesn't nudge it; cleared as soon as a bar moves.
+	const exact: Record<Key, string | null> = { a: null, b: null };
+	const hex = (key: Key) => exact[key] ?? theme.hslToHex(hsl[key]);
+
+	// The primary is the page background, the secondary is the accent.
+	function readLive() {
+		const css = getComputedStyle(document.documentElement);
+		return { a: css.getPropertyValue("--bg").trim(), b: css.getPropertyValue("--accent").trim() };
+	}
+
+	// Paint one colour's controls from hsl[key]; skip the field being typed in.
+	function show(key: Key, except?: string) {
+		const [h, s, l] = hsl[key];
+		const value = hex(key);
+		const fieldset = picks[key];
+		fieldset.style.setProperty("--h", String(h));
+		fieldset.style.setProperty("--s", `${s}%`);
+		fieldset.style.setProperty("--l", `${l}%`);
+		fieldset.style.setProperty("--swatch", value);
+		if (except !== "h") field(key, "h").value = String(h);
+		if (except !== "s") field(key, "s").value = String(s);
+		if (except !== "l") field(key, "l").value = String(l);
+		if (except !== "hex") field(key, "hex").value = value;
+		if (except !== "well") field(key, "well").value = value;
+	}
+
+	function sync() {
+		const live = readLive();
+		(["a", "b"] as Key[]).forEach((key) => {
+			if (theme.isHex(live[key])) {
+				hsl[key] = theme.hexToHsl(live[key]);
+				exact[key] = live[key].toLowerCase();
+			}
+			show(key);
+		});
+		const choice = theme.choice;
+		presets.forEach((p) => p.setAttribute("aria-checked", String(p.dataset.preset === choice)));
+		chip.hidden = typeof choice === "string";
+	}
+
+	function applyCustom() {
+		theme.choose({ a: hex("a"), b: hex("b") });
+		presets.forEach((p) => p.setAttribute("aria-checked", "false"));
+		chip.hidden = false;
+	}
+
+	(["a", "b"] as Key[]).forEach((key) => {
+		(["h", "s", "l"] as const).forEach((part, i) => {
+			field(key, part).addEventListener("input", (e) => {
+				hsl[key][i] = Number((e.target as HTMLInputElement).value);
+				exact[key] = null;
+				show(key, part);
+				applyCustom();
+			});
+		});
+
+		const fromHex = (value: string, source: string) => {
+			const v = value.trim().startsWith("#") ? value.trim() : `#${value.trim()}`;
+			const ok = theme.isHex(v);
+			field(key, "hex").toggleAttribute("aria-invalid", !ok);
+			if (!ok) return;
+			hsl[key] = theme.hexToHsl(v);
+			exact[key] = v.length === 4 ? theme.hslToHex(hsl[key]) : v.toLowerCase();
+			show(key, source);
+			applyCustom();
+		};
+		field(key, "hex").addEventListener("input", (e) => fromHex((e.target as HTMLInputElement).value, "hex"));
+		field(key, "hex").addEventListener("blur", () => {
+			field(key, "hex").removeAttribute("aria-invalid");
+			show(key);
+		});
+		field(key, "well").addEventListener("input", (e) => fromHex((e.target as HTMLInputElement).value, "well"));
+	});
+
+	presets.forEach((p) =>
+		p.addEventListener("click", () => {
+			theme.choose(p.dataset.preset!);
+			sync();
+		}),
+	);
+	panel.querySelector("[data-theme-reset]")!.addEventListener("click", () => {
+		theme.choose("auto");
+		sync();
+	});
+
+	function open(next: boolean) {
+		panel.hidden = !next;
+		toggle.setAttribute("aria-expanded", String(next));
+		if (next) {
+			sync();
+			(presets.find((p) => p.getAttribute("aria-checked") === "true") ?? presets[0]).focus({
+				preventScroll: true,
+			});
+		}
+	}
+	toggle.addEventListener("click", () => open(toggle.getAttribute("aria-expanded") !== "true"));
+	panel.querySelector("[data-theme-close]")!.addEventListener("click", () => {
+		open(false);
+		toggle.focus();
+	});
+	document.addEventListener("pointerdown", (e) => {
+		const target = e.target as Node;
+		if (!panel.hidden && !panel.contains(target) && !toggle.contains(target)) open(false);
+	});
+	document.addEventListener("keydown", (e) => {
+		if (e.key === "Escape" && !panel.hidden) {
+			open(false);
+			toggle.focus();
+		}
+	});
+	// Auto mode can flip with the system theme while the panel is open.
+	window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+		if (!panel.hidden && theme.choice === "auto") sync();
+	});
+</script>
+
+<style>
+	.panel {
+		position: absolute;
+		top: calc(100% + 0.7rem);
+		right: -0.5rem;
+		z-index: 40;
+		display: flex;
+		flex-direction: column;
+		gap: 0.9rem;
+		width: min(20.5rem, calc(100vw - 2rem));
+		padding: 1rem 1.1rem 0.9rem;
+		border: 1.5px solid var(--ink);
+		border-radius: 4px 9px 5px 8px / 9px 4px 8px 5px;
+		background: var(--bg);
+		color: var(--ink);
+		box-shadow: 5px 5px 0 var(--line);
+		/* undo the nav item's tilt */
+		transform: rotate(calc(-1 * var(--tilt, 0deg)));
+		font-family: var(--font-serif);
+		font-size: 1rem;
+		text-align: left;
+		animation: drop-in 0.18s ease-out;
+	}
+	.panel[hidden] {
+		display: none;
+	}
+	@media (max-width: 640px) {
+		.panel {
+			position: fixed;
+			top: 5.2rem;
+			left: max(16px, env(safe-area-inset-left, 0px));
+			right: max(16px, env(safe-area-inset-right, 0px));
+			width: auto;
+			max-height: calc(100dvh - 6.2rem);
+			overflow-y: auto;
+			transform: none;
+		}
+	}
+	@keyframes drop-in {
+		from {
+			opacity: 0;
+			translate: 0 -6px;
+		}
+	}
+
+	.head {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+	}
+	h2 {
+		font-family: var(--font-hand);
+		font-size: 1.7rem;
+		font-weight: 700;
+		line-height: 1;
+	}
+	.custom-chip {
+		padding: 0 0.5rem;
+		border: 1.5px solid var(--accent);
+		border-radius: 999px 800px 900px 700px;
+		color: var(--accent);
+		font-family: var(--font-hand);
+		font-size: 1.05rem;
+	}
+	.custom-chip[hidden] {
+		display: none;
+	}
+	.close {
+		margin-left: auto;
+		width: 1.8rem;
+		height: 1.8rem;
+		border: 0;
+		border-radius: 999px;
+		background: transparent;
+		color: var(--muted);
+		font-size: 1.5rem;
+		line-height: 1;
+		cursor: pointer;
+	}
+	.close:hover {
+		color: var(--accent);
+	}
+
+	.presets {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.5rem;
+	}
+	.presets button {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.5rem 0.25rem 0.4rem;
+		border: 1.5px solid var(--line);
+		border-radius: 6px;
+		background: transparent;
+		color: var(--ink);
+		font-family: var(--font-hand);
+		font-size: 1.15rem;
+		line-height: 1;
+		cursor: pointer;
+		transition: border-color 0.15s;
+	}
+	.presets button:hover {
+		border-color: var(--ink);
+	}
+	.presets button[aria-checked="true"] {
+		border-color: var(--accent);
+		box-shadow: inset 0 0 0 1px var(--accent);
+		color: var(--accent);
+	}
+	.swatch {
+		width: 1.7rem;
+		height: 1.7rem;
+		border-radius: 999px;
+		border: 1.5px solid var(--ink);
+		background: linear-gradient(135deg, var(--sa) 0 50%, var(--sb) 50% 100%);
+	}
+	.swatch--auto {
+		background: linear-gradient(90deg, var(--sa) 0 50%, var(--sb) 50% 100%);
+	}
+	.auto-note {
+		margin-top: -0.4rem;
+		color: var(--muted);
+		font-size: 0.85rem;
+		font-style: italic;
+	}
+
+	.pick {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		margin: 0;
+		padding: 0.7rem 0 0;
+		border: 0;
+		border-top: 1.5px dashed var(--line);
+		min-width: 0;
+	}
+	legend {
+		float: left;
+		width: 100%;
+		margin-bottom: 0.15rem;
+		font-family: var(--font-display);
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+	legend span {
+		color: var(--muted);
+		font-weight: 500;
+		letter-spacing: 0.06em;
+		text-transform: none;
+		font-family: var(--font-serif);
+		font-style: italic;
+		font-size: 0.95rem;
+	}
+	.pick-row {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+	}
+	.well {
+		width: 2.2rem;
+		height: 2.2rem;
+		padding: 0;
+		border: 1.5px solid var(--ink);
+		border-radius: 999px;
+		background: var(--swatch);
+		cursor: pointer;
+		overflow: hidden;
+		-webkit-appearance: none;
+		appearance: none;
+	}
+	.well::-webkit-color-swatch-wrapper {
+		padding: 0;
+	}
+	.well::-webkit-color-swatch {
+		border: 0;
+		border-radius: 999px;
+	}
+	.well::-moz-color-swatch {
+		border: 0;
+		border-radius: 999px;
+	}
+	.hex {
+		flex: 1;
+		min-width: 0;
+	}
+	.hex input {
+		width: 100%;
+		padding: 0.35rem 0.55rem;
+		border: 1.5px solid var(--line);
+		border-radius: 4px;
+		background: color-mix(in oklab, var(--ink) 5%, var(--bg));
+		color: var(--ink);
+		font-family: var(--font-mono);
+		font-size: 0.9rem;
+		letter-spacing: 0.04em;
+		text-transform: lowercase;
+	}
+	.hex input:focus {
+		border-color: var(--accent);
+		outline: none;
+	}
+	.hex input[aria-invalid] {
+		border-color: #c4352b;
+		border-style: dashed;
+	}
+
+	.bar-row {
+		display: grid;
+		grid-template-columns: 4.2rem 1fr;
+		align-items: center;
+		gap: 0.5rem;
+		font-family: var(--font-hand);
+		font-size: 1.1rem;
+		color: var(--muted);
+	}
+	.bar {
+		--track: linear-gradient(90deg, #000, #fff);
+		width: 100%;
+		height: 1.4rem;
+		margin: 0;
+		background: transparent;
+		cursor: pointer;
+		-webkit-appearance: none;
+		appearance: none;
+	}
+	.bar--hue {
+		--track: linear-gradient(
+			90deg,
+			hsl(0 var(--s) var(--l)),
+			hsl(60 var(--s) var(--l)),
+			hsl(120 var(--s) var(--l)),
+			hsl(180 var(--s) var(--l)),
+			hsl(240 var(--s) var(--l)),
+			hsl(300 var(--s) var(--l)),
+			hsl(360 var(--s) var(--l))
+		);
+	}
+	.bar--sat {
+		--track: linear-gradient(90deg, hsl(var(--h) 0% var(--l)), hsl(var(--h) 100% var(--l)));
+	}
+	.bar--shade {
+		--track: linear-gradient(90deg, #000, hsl(var(--h) var(--s) 50%), #fff);
+	}
+	.bar::-webkit-slider-runnable-track {
+		height: 0.75rem;
+		border: 1.5px solid var(--ink);
+		border-radius: 999px;
+		background: var(--track);
+	}
+	.bar::-moz-range-track {
+		height: 0.75rem;
+		border: 1.5px solid var(--ink);
+		border-radius: 999px;
+		background: var(--track);
+	}
+	.bar::-webkit-slider-thumb {
+		width: 1.15rem;
+		height: 1.15rem;
+		margin-top: calc((0.75rem - 3px - 1.15rem) / 2);
+		border: 2px solid var(--ink);
+		border-radius: 999px;
+		background: var(--swatch);
+		box-shadow: 0 0 0 2px var(--bg);
+		-webkit-appearance: none;
+		appearance: none;
+	}
+	.bar::-moz-range-thumb {
+		width: 1rem;
+		height: 1rem;
+		border: 2px solid var(--ink);
+		border-radius: 999px;
+		background: var(--swatch);
+		box-shadow: 0 0 0 2px var(--bg);
+	}
+	.bar:focus-visible {
+		outline: none;
+	}
+	.bar:focus-visible::-webkit-slider-thumb {
+		box-shadow:
+			0 0 0 2px var(--bg),
+			0 0 0 4px var(--accent);
+	}
+	.bar:focus-visible::-moz-range-thumb {
+		box-shadow:
+			0 0 0 2px var(--bg),
+			0 0 0 4px var(--accent);
+	}
+
+	.foot {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		padding-top: 0.6rem;
+		border-top: 1.5px dashed var(--line);
+		color: var(--muted);
+		font-size: 0.85rem;
+		font-style: italic;
+	}
+	.reset {
+		border: 0;
+		background: none;
+		color: var(--accent);
+		font-family: var(--font-hand);
+		font-size: 1.2rem;
+		cursor: pointer;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+</style>

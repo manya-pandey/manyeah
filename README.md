@@ -1,6 +1,6 @@
 # manyeah
 
-Personal site: a floating statue, five doodled sections, four colour palettes, a techno SPQR loading screen, and a wall of bricks every visitor helps build.
+Personal site: a floating statue, five doodled sections, a theme menu (cream, midnight, or your own colours), a techno SPQR loading screen, and a wall of bricks every visitor helps build.
 
 Built with [Astro](https://astro.build), Tailwind and three.js, deployed on Cloudflare Workers. Inspired by [abhi.now](https://abhi.now) (doodled section links) and [one-space](https://github.com/LHRUN/one-space) (the floating statue, MIT).
 
@@ -21,8 +21,9 @@ The dev server runs the brick API against a local KV store, so bricks work offli
 | --------------------------------------- | ---------------------------------------- |
 | Name, intro, résumé link, tagline       | `src/consts.ts` → `SITE`                 |
 | The statue                              | `npm run statue` (below), set `STATUE`   |
-| Palettes (swatch colours)               | `src/consts.ts` → `PALETTES`             |
-| Palettes (text/accent/statue lighting)  | `src/styles/global.css`                  |
+| Built-in themes (cream / midnight)      | `src/consts.ts` → `THEMES`, `global.css` |
+| Theme menu (presets, colour bars)       | `src/components/ThemePanel.astro`        |
+| Custom-theme rules (text colour, etc.)  | theme engine in `src/layouts/Base.astro` |
 | Work / research / people / snippets     | add a `.md` file in `src/content/<name>/`|
 | Blog posts                              | `src/content/blogs/*.md`                 |
 | Favourite quotes                        | `src/content/quotes.json`                |
@@ -44,6 +45,16 @@ npm run statue -- path/to/scan.stl public/statue.glb 120000 -90 0 0
 
 The last three numbers rotate the scan (degrees about X, Y and Z) so it ends up upright and facing the viewer; `-90 0 0` fixes the usual Z-up STL. Lower the triangle count for a smaller file. Then point `STATUE.SRC` in `src/consts.ts` at the new file. `STATUE.TURN` sets how far he looks to the side. Augustus has a flat back, so keep that small.
 
+## The theme menu
+
+The **theme** doodle after *snippets* opens a menu:
+
+- **Auto** (the default) shows Cream in light mode and Midnight in dark mode, following the visitor's system.
+- **Cream** and **Midnight** pin one of them.
+- **Primary** (background) and **secondary** (accent) colours can each be dragged on hue, strength and shade bars, typed as a hex code (`#1e3a5f` or `#abc`), or picked from the colour well. The page, including the statue's lighting, updates as you drag.
+
+For a custom theme the text colour is worked out from the background (dark text on light backgrounds, light text on dark ones). The choice is saved in that visitor's browser only.
+
 ## The bricks
 
 Each click on **Click to add a brick** calls `POST /api/bricks`, which adds one to a counter in Cloudflare KV (max 12 per visitor per minute). Every 5 bricks stacked become one marble block; the rest stay brick. If the API can't be reached (for example in a static preview), the wall falls back to the visitor's own browser and says so in the `?` popup.
@@ -61,6 +72,5 @@ Set the real domain in `astro.config.mjs` (`site`).
 ## Open items (from the design doc)
 
 - **Statue credit**: the footer says "statue: Augustus". Add the scan's source to `STATUE.CREDIT` / `STATUE.CREDIT_URL` if it needs attribution.
-- **Final palette set and default**: the first entry in `PALETTES` is the default.
 - **Tagline**: "a city of bricks, left in marble" isn't approved yet. Set `SITE.TAGLINE` to show one.
 - **Overall design**: the layout follows the paper sketch (`design/sketch.webp`).
